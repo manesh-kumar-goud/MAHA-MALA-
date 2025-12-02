@@ -1,6 +1,7 @@
 {
   "name": "mahalakshmi-solar-web",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "description": "Professional solar energy referral and management platform",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -8,10 +9,33 @@
     "start": "next start",
     "lint": "eslint"
   },
+  "keywords": [
+    "solar",
+    "energy",
+    "referral",
+    "nextjs",
+    "supabase",
+    "typescript"
+  ],
+  "author": "Mahalaxmi Solar Energies",
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@supabase/auth-helpers-nextjs": "^0.15.0",
+    "@supabase/supabase-js": "^2.86.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.23.25",
+    "lucide-react": "^0.555.0",
     "next": "16.0.6",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "react-hook-form": "^7.67.0",
+    "react-hot-toast": "^2.6.0",
+    "recharts": "^3.5.1",
+    "tailwind-merge": "^3.4.0",
+    "zod": "^4.1.13",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -22,5 +46,9 @@
     "eslint-config-next": "16.0.6",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   }
 }
