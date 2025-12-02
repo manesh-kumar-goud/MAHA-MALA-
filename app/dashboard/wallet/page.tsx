@@ -6,8 +6,6 @@ import { ArrowLeft, Wallet, Download, CreditCard, History, Plus } from 'lucide-r
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { getCurrentUser, signOut } from '@/lib/auth';
 import { supabase } from '@/lib/supabase/client';
@@ -97,18 +95,15 @@ export default function WalletPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar user={user} onLogout={handleLogout} />
+    <div className="mx-auto max-w-7xl">
+      <Link href="/dashboard">
+        <Button variant="ghost" className="mb-6">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Dashboard
+        </Button>
+      </Link>
 
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <Link href="/dashboard">
-          <Button variant="ghost" className="mb-6">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
-          </Button>
-        </Link>
-
-        {/* Balance Card */}
+      {/* Balance Card */}
         <Card className="mb-8 bg-gradient-to-r from-green-600 to-green-800 text-white border-0">
           <CardHeader>
             <CardTitle className="text-white flex items-center justify-between">
@@ -146,9 +141,9 @@ export default function WalletPage() {
               </p>
             )}
           </CardContent>
-        </Card>
+      </Card>
 
-        <div className="grid gap-8 lg:grid-cols-2">
+      <div className="grid gap-8 lg:grid-cols-2">
           {/* Reward History */}
           <Card>
             <CardHeader>
@@ -258,11 +253,11 @@ export default function WalletPage() {
                 </div>
               )}
             </CardContent>
-          </Card>
-        </div>
+        </Card>
+      </div>
 
-        {/* Bank Details Card */}
-        {bankDetails && (
+      {/* Bank Details Card */}
+      {bankDetails && (
           <Card className="mt-8">
             <CardHeader>
               <CardTitle>Bank Details</CardTitle>
@@ -292,9 +287,6 @@ export default function WalletPage() {
             </CardContent>
           </Card>
         )}
-      </div>
-
-      <Footer />
     </div>
   );
 }

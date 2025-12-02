@@ -45,8 +45,8 @@ export default function LoginPage() {
   const handleVerifyOTP = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (otp.length < 4) {
-      toast.error('Please enter the complete OTP code');
+    if (otp.length < 1) {
+      toast.error('Please enter the verification code');
       return;
     }
 
@@ -55,15 +55,12 @@ export default function LoginPage() {
     setLoading(false);
 
     if (result.success && result.userId) {
-      // Check if user profile exists
       const userExists = await checkUserExists(result.userId);
       
       if (userExists) {
-        // User exists, redirect to dashboard
         toast.success('Login successful!');
         router.push('/dashboard');
       } else {
-        // New user, ask for name
         setUserId(result.userId);
         setStep('name');
       }
@@ -93,20 +90,18 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <Link href="/" className="flex items-center justify-center space-x-2 mb-8">
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-blue-800">
-            <Sun className="h-7 w-7 text-white" />
-          </div>
-          <div>
-            <div className="text-xl font-bold text-gray-900">Mahalaxmi Solar</div>
-            <div className="text-xs text-gray-600">Energies</div>
-          </div>
+        <Link href="/" className="flex justify-center mb-8 group">
+          <img
+            src="/logo.png"
+            alt="Mahalaxmi Solar Energies"
+            className="h-16 w-auto transition-transform group-hover:scale-105"
+          />
         </Link>
 
-        <Card className="border-2">
+        <Card>
           <CardHeader>
             <CardTitle className="text-2xl">
               {step === 'email' && 'Welcome Back'}
@@ -114,8 +109,8 @@ export default function LoginPage() {
               {step === 'name' && 'Complete Your Profile'}
             </CardTitle>
             <CardDescription>
-              {step === 'email' && 'Enter your email to receive OTP'}
-              {step === 'otp' && 'Enter the 6-digit code sent to your email'}
+              {step === 'email' && 'Enter your email to receive a verification code'}
+              {step === 'otp' && 'Enter the verification code sent to your email'}
               {step === 'name' && 'Tell us your name to get started'}
             </CardDescription>
           </CardHeader>
@@ -125,7 +120,7 @@ export default function LoginPage() {
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Address</Label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Phone className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                     <Input
                       id="email"
                       type="email"
@@ -137,12 +132,12 @@ export default function LoginPage() {
                       disabled={loading}
                     />
                   </div>
-                  <p className="text-xs text-gray-500">
-                    We'll send a 6-digit OTP to your email
+                  <p className="text-xs text-slate-500">
+                    We'll send a verification code to your email
                   </p>
                 </div>
                 <Button type="submit" className="w-full" size="lg" disabled={loading}>
-                  {loading ? <LoadingSpinner size="sm" /> : 'Send OTP'}
+                  {loading ? <LoadingSpinner size="sm" /> : 'Send Code'}
                 </Button>
               </form>
             )}
@@ -150,26 +145,26 @@ export default function LoginPage() {
             {step === 'otp' && (
               <form onSubmit={handleVerifyOTP} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="otp">OTP Code</Label>
+                  <Label htmlFor="otp">Verification Code</Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                     <Input
                       id="otp"
                       type="text"
-                      placeholder="Enter OTP code"
+                      placeholder="Enter verification code"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                      className="pl-10 text-center text-xl tracking-wider"
+                      className="pl-10 text-center tracking-wider"
                       required
                       disabled={loading}
                     />
                   </div>
-                  <p className="text-xs text-gray-500">
-                    OTP sent to {email}
+                  <p className="text-xs text-slate-500">
+                    Verification code sent to {email}
                   </p>
                 </div>
                 <Button type="submit" className="w-full" size="lg" disabled={loading}>
-                  {loading ? <LoadingSpinner size="sm" /> : 'Verify OTP'}
+                  {loading ? <LoadingSpinner size="sm" /> : 'Verify Code'}
                 </Button>
                 <Button
                   type="button"
@@ -195,8 +190,9 @@ export default function LoginPage() {
                     onChange={(e) => setName(e.target.value)}
                     required
                     disabled={loading}
+                    autoFocus
                   />
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-slate-500">
                     This name will be used for all communications
                   </p>
                 </div>
@@ -207,13 +203,13 @@ export default function LoginPage() {
             )}
 
             <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
+              <p className="text-xs text-slate-600">
                 By continuing, you agree to our{' '}
-                <Link href="/terms" className="text-blue-600 hover:underline">
+                <Link href="/terms" className="text-slate-900 hover:underline font-medium">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link href="/privacy" className="text-blue-600 hover:underline">
+                <Link href="/privacy" className="text-slate-900 hover:underline font-medium">
                   Privacy Policy
                 </Link>
               </p>
@@ -222,7 +218,7 @@ export default function LoginPage() {
         </Card>
 
         <div className="mt-6 text-center">
-          <Link href="/" className="text-sm text-blue-600 hover:underline">
+          <Link href="/" className="text-sm text-slate-600 hover:text-slate-900">
             ← Back to Home
           </Link>
         </div>
@@ -230,4 +226,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

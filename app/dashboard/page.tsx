@@ -8,21 +8,23 @@ import {
   Users,
   TrendingUp,
   Plus,
-  Eye,
   IndianRupee,
-  Gift,
   Trophy,
   ArrowRight,
+  Calendar,
+  RefreshCw,
+  HelpCircle,
+  CheckCircle,
+  Clock,
+  ArrowUpRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { getCurrentUser, signOut } from '@/lib/auth';
+import { getCurrentUser } from '@/lib/auth';
 import { supabase } from '@/lib/supabase/client';
-import { formatCurrency, formatDate, getStatusColor } from '@/lib/utils';
+import { formatCurrency, getStatusColor } from '@/lib/utils';
 import type { User, Lead, DashboardStats } from '@/lib/types';
 import toast from 'react-hot-toast';
 
@@ -40,10 +42,10 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    checkAuth();
+    loadData();
   }, []);
 
-  const checkAuth = async () => {
+  const loadData = async () => {
     const currentUser = await getCurrentUser();
     if (!currentUser) {
       router.push('/auth/login');
@@ -56,7 +58,6 @@ export default function DashboardPage() {
 
   const fetchDashboardData = async (userId: string) => {
     try {
-      // Fetch user's leads
       const { data: leadsData, error: leadsError } = await supabase
         .from('leads')
         .select('*')
@@ -68,7 +69,6 @@ export default function DashboardPage() {
 
       setLeads(leadsData || []);
 
-      // Calculate stats
       const totalLeads = leadsData?.length || 0;
       const activeLeads = leadsData?.filter((l) =>
         ['submitted', 'verified', 'contacted', 'interested'].includes(l.status)
@@ -91,149 +91,118 @@ export default function DashboardPage() {
     }
   };
 
-  const handleLogout = async () => {
-    const result = await signOut();
-    if (result.success) {
-      toast.success('Logged out successfully');
-      router.push('/');
-    } else {
-      toast.error('Failed to logout');
-    }
-  };
-
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center py-12">
         <LoadingSpinner size="lg" />
       </div>
     );
   }
 
+  const currentMonth = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar user={user} onLogout={handleLogout} />
+    <div className="space-y-6">
+      {/* Page Title */}
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
+        <p className="text-sm text-slate-600 mt-1">Monthly performance overview</p>
+      </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Welcome Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Welcome back, {user?.name}!</h1>
-          <p className="mt-2 text-gray-600">Track your referrals and manage your rewards</p>
-        </div>
+      {/* Date Navigation */}
+      <div className="flex items-center space-x-2">
+        <Button variant="outline" size="sm" disabled>
+          Previous
+        </Button>
+        <Button variant="outline" size="sm">
+          <Calendar className="h-4 w-4 mr-2" />
+          {currentMonth}
+        </Button>
+        <Button variant="outline" size="sm" disabled>
+          Next
+        </Button>
+        <Button variant="outline" size="sm">
+          Current Month
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => user && fetchDashboardData(user.id)}>
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Refresh Data
+        </Button>
+      </div>
 
-        {/* Stats Grid */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-          <Card className="hover-lift">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Leads</CardTitle>
-              <Users className="h-4 w-4 text-gray-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900">{stats.totalLeads}</div>
-              <p className="text-xs text-gray-600 mt-1">All time referrals</p>
-            </CardContent>
-          </Card>
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Total Leads */}
+        <Card className="border-l-4 border-l-sky-500 bg-sky-50/50">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium text-slate-600">Total Leads</CardTitle>
+              <TrendingUp className="h-4 w-4 text-sky-600" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-slate-900">{stats.totalLeads}</div>
+            <p className="text-xs text-slate-600 mt-1">All time referrals</p>
+          </CardContent>
+        </Card>
 
-          <Card className="hover-lift">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Active Leads</CardTitle>
-              <TrendingUp className="h-4 w-4 text-blue-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-blue-600">{stats.activeLeads}</div>
-              <p className="text-xs text-gray-600 mt-1">In progress</p>
-            </CardContent>
-          </Card>
+        {/* Active Pipeline */}
+        <Card className="border-l-4 border-l-emerald-500 bg-emerald-50/50">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium text-slate-600">Active Pipeline</CardTitle>
+              <Clock className="h-4 w-4 text-emerald-600" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-slate-900">{stats.activeLeads}</div>
+            <p className="text-xs text-slate-600 mt-1">Leads in progress</p>
+          </CardContent>
+        </Card>
 
-          <Card className="hover-lift">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Total Rewards</CardTitle>
-              <Wallet className="h-4 w-4 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-green-600">
-                {formatCurrency(stats.totalRewards)}
-              </div>
-              <p className="text-xs text-gray-600 mt-1">Lifetime earnings</p>
-            </CardContent>
-          </Card>
+        {/* Total Rewards */}
+        <Card className="border-l-4 border-l-amber-500 bg-amber-50/50">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium text-slate-600">Total Rewards</CardTitle>
+              <IndianRupee className="h-4 w-4 text-amber-600" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-slate-900">{formatCurrency(stats.totalRewards)}</div>
+            <p className="text-xs text-slate-600 mt-1">Lifetime earnings</p>
+          </CardContent>
+        </Card>
 
-          <Card className="hover-lift">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Conversion</CardTitle>
-              <Trophy className="h-4 w-4 text-purple-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-purple-600">
-                {stats.conversionRate.toFixed(1)}%
-              </div>
-              <p className="text-xs text-gray-600 mt-1">Success rate</p>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Conversion Rate */}
+        <Card className="border-l-4 border-l-purple-500 bg-purple-50/50">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium text-slate-600">Success Rate</CardTitle>
+              <CheckCircle className="h-4 w-4 text-purple-600" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-slate-900">{stats.conversionRate.toFixed(1)}%</div>
+            <p className="text-xs text-slate-600 mt-1">Conversion rate</p>
+          </CardContent>
+        </Card>
+      </div>
 
-        {/* Quick Actions */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
-          <Link href="/dashboard/leads/new">
-            <Card className="hover-lift cursor-pointer border-2 border-blue-200 hover:border-blue-400 transition-all">
-              <CardHeader>
-                <div className="flex items-center space-x-3">
-                  <div className="rounded-lg bg-blue-100 p-3">
-                    <Plus className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <div>
-                    <CardTitle>Add New Lead</CardTitle>
-                    <CardDescription>Submit a new referral</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-            </Card>
-          </Link>
-
-          <Link href="/dashboard/wallet">
-            <Card className="hover-lift cursor-pointer border-2 border-green-200 hover:border-green-400 transition-all">
-              <CardHeader>
-                <div className="flex items-center space-x-3">
-                  <div className="rounded-lg bg-green-100 p-3">
-                    <Wallet className="h-6 w-6 text-green-600" />
-                  </div>
-                  <div>
-                    <CardTitle>My Wallet</CardTitle>
-                    <CardDescription>Manage rewards & withdrawals</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-            </Card>
-          </Link>
-
-          <Link href="/dashboard/leaderboard">
-            <Card className="hover-lift cursor-pointer border-2 border-purple-200 hover:border-purple-400 transition-all">
-              <CardHeader>
-                <div className="flex items-center space-x-3">
-                  <div className="rounded-lg bg-purple-100 p-3">
-                    <Trophy className="h-6 w-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <CardTitle>Leaderboard</CardTitle>
-                    <CardDescription>See top performers</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-            </Card>
-          </Link>
-        </div>
-
+      {/* Performance Sections */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Leads */}
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Recent Leads</CardTitle>
-                <CardDescription>Your latest referral submissions</CardDescription>
+              <div className="flex items-center space-x-2">
+                <Users className="h-5 w-5 text-slate-600" />
+                <CardTitle>Recent Leads - {currentMonth}</CardTitle>
               </div>
-              <Link href="/dashboard/leads">
-                <Button variant="outline" size="sm">
-                  View All
-                  <ArrowRight className="ml-2 h-4 w-4" />
+              <Link href="/dashboard/leads/new">
+                <Button size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Lead
                 </Button>
               </Link>
             </div>
@@ -241,9 +210,9 @@ export default function DashboardPage() {
           <CardContent>
             {leads.length === 0 ? (
               <div className="text-center py-12">
-                <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No leads yet</h3>
-                <p className="text-gray-600 mb-6">Start referring customers to earn rewards</p>
+                <Users className="mx-auto h-12 w-12 text-slate-400 mb-4" />
+                <h3 className="text-base font-medium text-slate-900 mb-2">No leads yet</h3>
+                <p className="text-sm text-slate-600 mb-6">Start referring customers to earn rewards</p>
                 <Link href="/dashboard/leads/new">
                   <Button>
                     <Plus className="mr-2 h-4 w-4" />
@@ -252,32 +221,17 @@ export default function DashboardPage() {
                 </Link>
               </div>
             ) : (
-              <div className="space-y-4">
-                {leads.map((lead) => (
-                  <div
-                    key={lead.id}
-                    className="flex items-center justify-between rounded-lg border border-gray-200 p-4 hover:bg-gray-50 transition-colors"
-                  >
+              <div className="space-y-3">
+                {leads.slice(0, 5).map((lead) => (
+                  <div key={lead.id} className="flex items-center justify-between p-3 rounded-lg border border-slate-200 hover:border-slate-300 transition-colors">
                     <div className="flex-1">
-                      <div className="flex items-center space-x-3">
-                        <h4 className="font-medium text-gray-900">{lead.customer_name}</h4>
-                        <Badge className={getStatusColor(lead.status)}>
-                          {lead.status.charAt(0).toUpperCase() + lead.status.slice(1)}
-                        </Badge>
-                      </div>
-                      <div className="mt-1 flex items-center space-x-4 text-sm text-gray-600">
-                        <span>{lead.customer_phone}</span>
-                        <span>•</span>
-                        <span>{lead.city}</span>
-                        <span>•</span>
-                        <span>{formatDate(lead.created_at)}</span>
-                      </div>
+                      <div className="font-medium text-slate-900">{lead.customer_name}</div>
+                      <div className="text-sm text-slate-600">{lead.customer_phone}</div>
                     </div>
-                    <Link href={`/dashboard/leads/${lead.id}`}>
-                      <Button variant="ghost" size="sm">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </Link>
+                    <div className="flex items-center space-x-3">
+                      <Badge className={getStatusColor(lead.status)}>{lead.status}</Badge>
+                      <ArrowUpRight className="h-4 w-4 text-slate-400" />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -285,27 +239,62 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Motivational Banner */}
-        <Card className="mt-8 bg-gradient-to-r from-blue-600 to-blue-800 text-white border-0">
+        {/* Quick Actions */}
+        <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-white text-2xl mb-2">Keep Going! 🚀</CardTitle>
-                <CardDescription className="text-blue-100">
-                  Refer more customers and earn up to ₹5,000 per successful installation
-                </CardDescription>
-              </div>
-              <Gift className="h-12 w-12 text-white opacity-80" />
+            <div className="flex items-center space-x-2">
+              <Trophy className="h-5 w-5 text-slate-600" />
+              <CardTitle>Quick Actions - {currentMonth}</CardTitle>
             </div>
           </CardHeader>
+          <CardContent className="space-y-3">
+            <Link href="/dashboard/wallet">
+              <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:border-sky-300 hover:bg-sky-50 transition-all cursor-pointer group">
+                <div className="flex items-center space-x-3">
+                  <div className="h-10 w-10 rounded-lg bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                    <Wallet className="h-5 w-5 text-emerald-600" />
+                  </div>
+                  <div>
+                    <div className="font-medium text-slate-900">My Wallet</div>
+                    <div className="text-sm text-slate-600">Manage rewards & withdrawals</div>
+                  </div>
+                </div>
+                <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-sky-600 transition-colors" />
+              </div>
+            </Link>
+
+            <Link href="/dashboard/leaderboard">
+              <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:border-sky-300 hover:bg-sky-50 transition-all cursor-pointer group">
+                <div className="flex items-center space-x-3">
+                  <div className="h-10 w-10 rounded-lg bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors">
+                    <Trophy className="h-5 w-5 text-amber-600" />
+                  </div>
+                  <div>
+                    <div className="font-medium text-slate-900">Leaderboard</div>
+                    <div className="text-sm text-slate-600">See top performers</div>
+                  </div>
+                </div>
+                <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-sky-600 transition-colors" />
+              </div>
+            </Link>
+
+            <Link href="/contact">
+              <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:border-sky-300 hover:bg-sky-50 transition-all cursor-pointer group">
+                <div className="flex items-center space-x-3">
+                  <div className="h-10 w-10 rounded-lg bg-sky-100 flex items-center justify-center group-hover:bg-sky-200 transition-colors">
+                    <HelpCircle className="h-5 w-5 text-sky-600" />
+                  </div>
+                  <div>
+                    <div className="font-medium text-slate-900">Get Support</div>
+                    <div className="text-sm text-slate-600">Contact our team</div>
+                  </div>
+                </div>
+                <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-sky-600 transition-colors" />
+              </div>
+            </Link>
+          </CardContent>
         </Card>
       </div>
-
-      <Footer />
     </div>
   );
 }
-
-
-
-

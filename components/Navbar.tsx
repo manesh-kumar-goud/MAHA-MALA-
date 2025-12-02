@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Menu, X, Sun, User, LogOut, LayoutDashboard, Shield } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -20,7 +20,7 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
     { name: 'Home', href: '/' },
     { name: 'About', href: '/about' },
     { name: 'Services', href: '/services' },
-    { name: 'Subsidy Info', href: '/subsidy' },
+    { name: 'Subsidy', href: '/subsidy' },
     { name: 'Gallery', href: '/gallery' },
     { name: 'Blog', href: '/blog' },
     { name: 'Contact', href: '/contact' },
@@ -31,31 +31,29 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
   };
 
   return (
-    <nav className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-blue-800">
-              <Sun className="h-6 w-6 text-white" />
-            </div>
-            <div className="hidden sm:block">
-              <div className="text-lg font-bold text-gray-900">Mahalaxmi Solar</div>
-              <div className="text-xs text-gray-600">Energies</div>
-            </div>
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur-xl shadow-sm">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="flex h-20 items-center justify-between">
+          {/* Logo - Larger */}
+          <Link href="/" className="flex items-center flex-shrink-0 group">
+            <img
+              src="/logo.png"
+              alt="Mahalaxmi Solar Energies"
+              className="h-14 w-auto transition-transform group-hover:scale-105"
+            />
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex lg:items-center lg:space-x-1">
+          {/* Desktop Navigation - Center */}
+          <div className="hidden lg:flex lg:items-center lg:space-x-8 lg:flex-1 lg:justify-center">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  'rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                  'text-sm font-medium transition-colors',
                   isActive(item.href)
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                    ? 'text-slate-900'
+                    : 'text-slate-600 hover:text-slate-900'
                 )}
               >
                 {item.name}
@@ -63,80 +61,126 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
             ))}
           </div>
 
-          {/* Right side buttons */}
-          <div className="flex items-center space-x-4">
+          {/* Right side - CTAs */}
+          <div className="hidden lg:flex items-center space-x-3 flex-shrink-0">
             {user ? (
-              <div className="flex items-center space-x-2">
+              <>
                 <Link href="/dashboard">
-                  <Button variant="outline" size="sm">
-                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                  <Button variant="ghost" size="sm" className="text-slate-700 hover:text-slate-900">
                     Dashboard
                   </Button>
                 </Link>
-                {user.role === 'admin' || user.role === 'super_admin' ? (
+                {user.role === 'admin' || user.role === 'super_admin' && (
                   <Link href="/admin">
-                    <Button variant="outline" size="sm">
-                      <Shield className="mr-2 h-4 w-4" />
+                    <Button variant="ghost" size="sm" className="text-slate-700 hover:text-slate-900">
                       Admin
                     </Button>
                   </Link>
-                ) : null}
-                <Button variant="ghost" size="sm" onClick={onLogout}>
-                  <LogOut className="mr-2 h-4 w-4" />
+                )}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={onLogout}
+                  className="text-slate-700 hover:text-slate-900"
+                >
                   Logout
                 </Button>
-              </div>
+              </>
             ) : (
-              <Link href="/auth/login">
-                <Button size="sm">
-                  <User className="mr-2 h-4 w-4" />
-                  Login
-                </Button>
-              </Link>
+              <>
+                <Link href="/contact">
+                  <Button variant="ghost" size="sm" className="text-slate-700 hover:text-slate-900">
+                    Talk to Sales
+                  </Button>
+                </Link>
+                <Link href="/auth/login">
+                  <Button size="sm" className="bg-slate-900 text-white hover:bg-slate-800 shadow-sm">
+                    Login
+                  </Button>
+                </Link>
+              </>
             )}
-
-            {/* Mobile menu button */}
-            <button
-              type="button"
-              className="lg:hidden rounded-md p-2 text-gray-700 hover:bg-gray-100"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </button>
           </div>
+
+          {/* Mobile menu button */}
+          <button
+            type="button"
+            className="lg:hidden p-2 text-slate-700 hover:bg-slate-100 rounded-lg"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </button>
         </div>
       </div>
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-gray-200 bg-white">
-          <div className="space-y-1 px-4 pb-3 pt-2">
+        <div className="lg:hidden border-t border-slate-200 bg-white shadow-lg">
+          <div className="space-y-1 px-4 py-4">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  'block rounded-md px-3 py-2 text-base font-medium',
+                  'block px-3 py-2 text-base font-medium rounded-md',
                   isActive(item.href)
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                    ? 'text-slate-900 bg-slate-100'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                 )}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {item.name}
               </Link>
             ))}
+            
+            <div className="mt-4 pt-4 border-t border-slate-200 space-y-2">
+              {user ? (
+                <>
+                  <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start text-slate-700 hover:text-slate-900">
+                      Dashboard
+                    </Button>
+                  </Link>
+                  {user.role === 'admin' || user.role === 'super_admin' && (
+                    <Link href="/admin" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="ghost" className="w-full justify-start text-slate-700 hover:text-slate-900">
+                        Admin
+                      </Button>
+                    </Link>
+                  )}
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => {
+                      onLogout?.();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full justify-start text-slate-700 hover:text-slate-900"
+                  >
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link href="/contact" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="outline" className="w-full">
+                      Talk to Sales
+                    </Button>
+                  </Link>
+                  <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
+                    <Button className="w-full bg-slate-900 text-white hover:bg-slate-800">
+                      Login
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}
     </nav>
   );
 }
-
-
-
-

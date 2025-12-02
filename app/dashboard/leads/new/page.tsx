@@ -9,8 +9,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { getCurrentUser, signOut } from '@/lib/auth';
 import { supabase } from '@/lib/supabase/client';
@@ -129,17 +127,14 @@ export default function NewLeadPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center py-12">
         <LoadingSpinner size="lg" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar user={user} onLogout={handleLogout} />
-
-      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-3xl">
         <Link href="/dashboard">
           <Button variant="ghost" className="mb-6">
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -298,9 +293,6 @@ export default function NewLeadPage() {
             </form>
           </CardContent>
         </Card>
-      </div>
-
-      <Footer />
     </div>
   );
 }

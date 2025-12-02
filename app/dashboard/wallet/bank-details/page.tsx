@@ -7,8 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { getCurrentUser, signOut } from '@/lib/auth';
 import { supabase } from '@/lib/supabase/client';
@@ -137,10 +135,7 @@ export default function BankDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar user={user} onLogout={handleLogout} />
-
-      <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-3xl">
         <Link href="/dashboard/wallet">
           <Button variant="ghost" className="mb-6">
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -306,9 +301,6 @@ export default function BankDetailsPage() {
             </form>
           </CardContent>
         </Card>
-      </div>
-
-      <Footer />
     </div>
   );
 }
