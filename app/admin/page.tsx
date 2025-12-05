@@ -134,6 +134,13 @@ export default function AdminDashboard() {
       color: 'from-green-500 to-green-600',
     },
     {
+      icon: Activity,
+      title: 'Lead Dashboard',
+      description: 'Manage lead dashboard content & rewards',
+      href: '/admin/lead-dashboard',
+      color: 'from-cyan-500 to-cyan-600',
+    },
+    {
       icon: Wallet,
       title: 'Withdrawals',
       description: 'Process withdrawal requests',

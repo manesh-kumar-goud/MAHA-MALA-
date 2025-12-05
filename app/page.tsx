@@ -156,13 +156,19 @@ export default function HomePage() {
               </p>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Link href="/auth/login">
-                  <Button size="lg" className="w-full sm:w-auto bg-white text-slate-900 hover:bg-slate-100">
+                  <Button size="lg" className="w-full sm:w-auto bg-white text-slate-900 hover:bg-slate-100 font-semibold">
                     Get Started
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
+                <Link href="/leads-dashboard">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-white bg-transparent text-white hover:bg-white hover:text-slate-900 font-semibold transition-all">
+                    <Award className="mr-2 h-4 w-4" />
+                    Lead Dashboard
+                  </Button>
+                </Link>
                 <Link href="/subsidy">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-white text-blue hover:bg-white/10">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-2 border-white bg-transparent text-white hover:bg-white hover:text-slate-900 font-semibold transition-all">
                     View Subsidy Details
                   </Button>
                 </Link>
@@ -333,45 +339,31 @@ export default function HomePage() {
               className="group cursor-pointer"
             >
               <div className="relative h-80 rounded-2xl overflow-hidden">
-                {/* Background - Gradient fallback */}
+                {/* Gradient Background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-sky-500 to-blue-600" />
                 
-                {/* OPTION 1: Image - Uncomment and add your image path */}
-                <img
-                  src="/images/why-choose/happy-customers.jpg"
-                  alt="Happy Customers"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
+                {/* Subtle Pattern Overlay */}
+                <div className="absolute inset-0 opacity-10">
+                  <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '30px 30px' }} />
+                </div>
                 
-                {/* OPTION 2: Video - Uncomment to use video instead of image */}
-                {/* 
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="absolute inset-0 w-full h-full object-cover"
-                >
-                  <source src="/videos/why-choose/happy-customers.mp4" type="video/mp4" />
-                </video>
-                */}
+                {/* Gradient Overlay for Text Readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
                 
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
+                {/* Icon at Top */}
+                <div className="absolute top-6 left-6">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                    <Users className="h-7 w-7 text-white" />
+                  </div>
+                </div>
                 
                 {/* Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <div className="flex items-end justify-between">
-                    <div>
-                      <div className="text-4xl font-bold text-white mb-1">10,000+</div>
-                      <div className="text-sm font-medium text-white/90">Happy Customers</div>
-                    </div>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-500 flex-shrink-0">
-                      <Users className="h-5 w-5 text-white" />
-                    </div>
+                  <div className="text-sm font-semibold text-sky-300 mb-2 uppercase tracking-wider">Trust & Reliability</div>
+                  <div className="text-4xl font-bold text-white mb-2">10,000+</div>
+                  <div className="text-base font-medium text-white/90 mb-3">Happy Customers</div>
+                  <div className="text-xs text-white/70 leading-relaxed">
+                    Join thousands of satisfied customers across India who trust our solar solutions
                   </div>
                 </div>
               </div>
@@ -387,45 +379,31 @@ export default function HomePage() {
               className="group cursor-pointer"
             >
               <div className="relative h-80 rounded-2xl overflow-hidden">
-                {/* Background - Gradient fallback */}
+                {/* Gradient Background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-green-600" />
                 
-                {/* OPTION 1: Image - Uncomment and add your image path */}
-                <img
-                  src="/images/why-choose/warranty.jpg"
-                  alt="25 Year Warranty"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
+                {/* Subtle Pattern Overlay */}
+                <div className="absolute inset-0 opacity-10">
+                  <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '30px 30px' }} />
+                </div>
                 
-                {/* OPTION 2: Video - Uncomment to use video instead of image */}
-                {/* 
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="absolute inset-0 w-full h-full object-cover"
-                >
-                  <source src="/videos/why-choose/warranty.mp4" type="video/mp4" />
-                </video>
-                */}
+                {/* Gradient Overlay for Text Readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
                 
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
+                {/* Icon at Top */}
+                <div className="absolute top-6 left-6">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                    <Shield className="h-7 w-7 text-white" />
+                  </div>
+                </div>
                 
                 {/* Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <div className="flex items-end justify-between">
-                    <div>
-                      <div className="text-4xl font-bold text-white mb-1">25 Years</div>
-                      <div className="text-sm font-medium text-white/90">Warranty Coverage</div>
-                    </div>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 flex-shrink-0">
-                      <Shield className="h-5 w-5 text-white" />
-                    </div>
+                  <div className="text-sm font-semibold text-emerald-300 mb-2 uppercase tracking-wider">Industry Leading</div>
+                  <div className="text-4xl font-bold text-white mb-2">25 Years</div>
+                  <div className="text-base font-medium text-white/90 mb-3">Warranty Coverage</div>
+                  <div className="text-xs text-white/70 leading-relaxed">
+                    Complete protection on all solar panels, inverters, and installation work
                   </div>
                 </div>
               </div>
@@ -441,45 +419,31 @@ export default function HomePage() {
               className="group cursor-pointer"
             >
               <div className="relative h-80 rounded-2xl overflow-hidden">
-                {/* Background - Gradient fallback */}
+                {/* Gradient Background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-orange-600" />
                 
-                {/* OPTION 1: Image - Uncomment and add your image path */}
-                <img
-                  src="/images/why-choose/savings.jpg"
-                  alt="90% Bill Reduction"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
+                {/* Subtle Pattern Overlay */}
+                <div className="absolute inset-0 opacity-10">
+                  <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '30px 30px' }} />
+                </div>
                 
-                {/* OPTION 2: Video - Uncomment to use video instead of image */}
-                {/* 
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="absolute inset-0 w-full h-full object-cover"
-                >
-                  <source src="/videos/why-choose/savings.mp4" type="video/mp4" />
-                </video>
-                */}
+                {/* Gradient Overlay for Text Readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
                 
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
+                {/* Icon at Top */}
+                <div className="absolute top-6 left-6">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                    <Zap className="h-7 w-7 text-white" />
+                  </div>
+                </div>
                 
                 {/* Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <div className="flex items-end justify-between">
-                    <div>
-                      <div className="text-4xl font-bold text-white mb-1">90%</div>
-                      <div className="text-sm font-medium text-white/90">Bill Reduction</div>
-                    </div>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-500 flex-shrink-0">
-                      <Zap className="h-5 w-5 text-white" />
-                    </div>
+                  <div className="text-sm font-semibold text-amber-300 mb-2 uppercase tracking-wider">Maximum Savings</div>
+                  <div className="text-4xl font-bold text-white mb-2">90%</div>
+                  <div className="text-base font-medium text-white/90 mb-3">Bill Reduction</div>
+                  <div className="text-xs text-white/70 leading-relaxed">
+                    Cut your monthly electricity costs and enjoy long-term financial freedom
                   </div>
                 </div>
               </div>
@@ -495,45 +459,31 @@ export default function HomePage() {
               className="group cursor-pointer"
             >
               <div className="relative h-80 rounded-2xl overflow-hidden">
-                {/* Background - Gradient fallback */}
+                {/* Gradient Background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-indigo-600" />
                 
-                {/* OPTION 1: Image - Uncomment and add your image path */}
-                <img
-                  src="/images/why-choose/referral-earnings.jpg"
-                  alt="Referral Earnings"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
+                {/* Subtle Pattern Overlay */}
+                <div className="absolute inset-0 opacity-10">
+                  <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '30px 30px' }} />
+                </div>
                 
-                {/* OPTION 2: Video - Uncomment to use video instead of image */}
-                {/* 
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="absolute inset-0 w-full h-full object-cover"
-                >
-                  <source src="/videos/why-choose/referral-earnings.mp4" type="video/mp4" />
-                </video>
-                */}
+                {/* Gradient Overlay for Text Readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
                 
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
+                {/* Icon at Top */}
+                <div className="absolute top-6 left-6">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                    <Award className="h-7 w-7 text-white" />
+                  </div>
+                </div>
                 
                 {/* Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <div className="flex items-end justify-between">
-                    <div>
-                      <div className="text-4xl font-bold text-white mb-1">₹5,000</div>
-                      <div className="text-sm font-medium text-white/90">Per Referral Earning</div>
-                    </div>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-500 flex-shrink-0">
-                      <Award className="h-5 w-5 text-white" />
-                    </div>
+                  <div className="text-sm font-semibold text-purple-300 mb-2 uppercase tracking-wider">Earn Extra Income</div>
+                  <div className="text-4xl font-bold text-white mb-2">₹5,000</div>
+                  <div className="text-base font-medium text-white/90 mb-3">Per Referral Earning</div>
+                  <div className="text-xs text-white/70 leading-relaxed">
+                    Join our referral program and earn rewards for every successful customer
                   </div>
                 </div>
               </div>
@@ -856,12 +806,12 @@ export default function HomePage() {
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link href="/contact">
-                <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100 w-full sm:w-auto">
+                <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100 w-full sm:w-auto font-semibold shadow-lg">
                   Contact Us Today
                 </Button>
               </Link>
               <Link href="/auth/login">
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-slate-900 w-full sm:w-auto font-semibold transition-all">
                   Join Referral Program
                 </Button>
               </Link>

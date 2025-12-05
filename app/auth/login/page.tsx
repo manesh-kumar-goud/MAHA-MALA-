@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { sendOTP, verifyOTP, createOrUpdateUser, checkUserExists } from '@/lib/auth';
+import { supabase } from '@/lib/supabase/client';
 import toast from 'react-hot-toast';
 import { validatePhoneNumber, validateEmail } from '@/lib/utils';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -51,21 +52,62 @@ export default function LoginPage() {
     }
 
     setLoading(true);
+    
+    try {
+      console.log('Starting OTP verification for:', email);
     const result = await verifyOTP(email, otp);
-    setLoading(false);
+      console.log('OTP verification result:', result);
 
     if (result.success && result.userId) {
+        console.log('✓ OTP verified successfully for user:', result.userId);
+        
+        // Wait a bit for session to be established
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Check if user profile exists in database
+        console.log('Checking if user exists in database...');
       const userExists = await checkUserExists(result.userId);
+        console.log('User exists in database:', userExists);
       
       if (userExists) {
-        toast.success('Login successful!');
-        router.push('/dashboard');
+          // User exists - redirect to dashboard
+          toast.success('Login successful!', { duration: 3000 });
+          console.log('✓ User found. Checking session...');
+          
+          // Check if session exists
+          const { data: { session } } = await supabase.auth.getSession();
+          console.log('Current session:', session ? 'EXISTS' : 'NOT FOUND');
+          
+          if (!session) {
+            console.error('❌ WARNING: No session found after OTP verification!');
+            toast.error('Session error. Please try logging in again.');
+            setLoading(false);
+            return;
+          }
+          
+          console.log('✓ Session confirmed. Redirecting to dashboard...');
+          
+          // Wait a bit more for cookies to be set
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          
+          console.log('→ Executing redirect NOW');
+          window.location.replace('/dashboard');
       } else {
+          // New user - ask for name
+          console.log('⚠ User profile not found, requesting name');
         setUserId(result.userId);
         setStep('name');
+          toast.success('OTP verified! Please complete your profile.');
       }
     } else {
+        console.error('❌ OTP verification failed:', result.error);
       toast.error(result.error || 'Invalid OTP. Please try again.');
+      }
+    } catch (error: any) {
+      console.error('❌ Error during OTP verification:', error);
+      toast.error('An error occurred: ' + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,14 +120,26 @@ export default function LoginPage() {
     }
 
     setLoading(true);
+    
+    try {
+      console.log('Creating user profile:', { userId, name, email });
     const result = await createOrUpdateUser(userId, name, email);
-    setLoading(false);
 
     if (result.success) {
-      toast.success('Profile created successfully!');
-      router.push('/dashboard');
+        toast.success('Profile created successfully! Redirecting...');
+        // Use window.location for reliable redirect
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 1000);
     } else {
+        console.error('Profile creation failed:', result.error);
       toast.error(result.error || 'Failed to create profile. Please try again.');
+      }
+    } catch (error: any) {
+      console.error('Error creating profile:', error);
+      toast.error('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -164,7 +218,14 @@ export default function LoginPage() {
                   </p>
                 </div>
                 <Button type="submit" className="w-full" size="lg" disabled={loading}>
-                  {loading ? <LoadingSpinner size="sm" /> : 'Verify Code'}
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <LoadingSpinner size="sm" />
+                      Verifying...
+                    </span>
+                  ) : (
+                    'Verify Code'
+                  )}
                 </Button>
                 <Button
                   type="button"

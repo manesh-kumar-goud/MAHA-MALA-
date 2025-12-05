@@ -217,6 +217,68 @@ export interface LeaderboardEntry {
   rank: number;
 }
 
+export interface LeadDashboardContent {
+  id: string;
+  section_key: string;
+  title: string;
+  content: string;
+  display_order: number;
+  is_active: boolean;
+  created_by?: string;
+  updated_by?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface LeadRewardStructure {
+  id: string;
+  lead_type: string;
+  reward_amount: number;
+  description?: string;
+  icon_name?: string;
+  display_order: number;
+  is_active: boolean;
+  created_by?: string;
+  updated_by?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface LeadDashboardFAQ {
+  id: string;
+  question: string;
+  answer: string;
+  category?: string;
+  display_order: number;
+  is_active: boolean;
+  created_by?: string;
+  updated_by?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface LeadRequirement {
+  id: string;
+  title: string;
+  description: string;
+  icon_name?: string;
+  display_order: number;
+  is_active: boolean;
+  created_by?: string;
+  updated_by?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface LeadDashboardSetting {
+  id: string;
+  setting_key: string;
+  setting_value: string;
+  setting_type: 'text' | 'number' | 'boolean' | 'json';
+  description?: string;
+  updated_by?: string;
+  updated_at: string;
+}
 
 
 

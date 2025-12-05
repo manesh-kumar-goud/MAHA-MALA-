@@ -48,6 +48,13 @@ export async function verifyOTP(
         type: 'email',
       });
       if (error) throw error;
+      
+      // Log session info for debugging
+      console.log('Session created:', data.session ? 'YES' : 'NO');
+      if (data.session) {
+        console.log('Session expires:', data.session.expires_at);
+      }
+      
       return { success: true, userId: data.user?.id };
     } else {
       // Verify phone OTP
@@ -58,6 +65,13 @@ export async function verifyOTP(
         type: 'sms',
       });
       if (error) throw error;
+      
+      // Log session info for debugging
+      console.log('Session created:', data.session ? 'YES' : 'NO');
+      if (data.session) {
+        console.log('Session expires:', data.session.expires_at);
+      }
+      
       return { success: true, userId: data.user?.id };
     }
   } catch (error: any) {
