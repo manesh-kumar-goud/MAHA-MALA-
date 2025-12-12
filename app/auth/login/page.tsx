@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Sun, Phone, Lock } from 'lucide-react';
+import { Sun, Phone, Lock, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,30 +16,64 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [step, setStep] = useState<'email' | 'otp' | 'name'>('email');
-  const [email, setEmail] = useState('');
+  const [step, setStep] = useState<'input' | 'otp' | 'name'>('input');
+  const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
+  const [emailOrPhone, setEmailOrPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [name, setName] = useState('');
   const [userId, setUserId] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // reCAPTCHA container for Firebase
+  useEffect(() => {
+    // Create reCAPTCHA container if it doesn't exist
+    if (typeof window !== 'undefined' && !document.getElementById('recaptcha-container')) {
+      const recaptchaDiv = document.createElement('div');
+      recaptchaDiv.id = 'recaptcha-container';
+      recaptchaDiv.style.display = 'none';
+      document.body.appendChild(recaptchaDiv);
+    }
+  }, []);
+
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateEmail(email)) {
+    // Validate input based on auth method
+    if (authMethod === 'email') {
+      if (!validateEmail(emailOrPhone)) {
       toast.error('Please enter a valid email address');
       return;
+      }
+    } else {
+      if (!validatePhoneNumber(emailOrPhone)) {
+        toast.error('Please enter a valid 10-digit phone number');
+        return;
+      }
     }
 
     setLoading(true);
-    const result = await sendOTP(email);
+    const result = await sendOTP(emailOrPhone);
     setLoading(false);
 
     if (result.success) {
+      if (authMethod === 'email') {
       toast.success('OTP sent to your email! Check your inbox.');
+      } else {
+        toast.success('OTP sent to your phone! Check your SMS.');
+      }
       setStep('otp');
     } else {
-      toast.error(result.error || 'Failed to send OTP. Please try again.');
+      // Show more helpful error messages
+      let errorMessage = result.error || 'Failed to send OTP. Please try again.';
+      
+      // Check for billing error
+      if (errorMessage.includes('billing')) {
+        errorMessage = 'Firebase billing issue. Please ensure: 1) Project is on Blaze plan, 2) Billing account is linked and active, 3) Identity Toolkit API is enabled. See FIREBASE_BILLING_FIX.md for details.';
+      }
+      
+      toast.error(errorMessage, {
+        duration: 8000, // Show longer for billing errors
+      });
     }
   };
 
@@ -54,8 +88,8 @@ export default function LoginPage() {
     setLoading(true);
     
     try {
-      console.log('Starting OTP verification for:', email);
-    const result = await verifyOTP(email, otp);
+      console.log('Starting OTP verification for:', emailOrPhone);
+    const result = await verifyOTP(emailOrPhone, otp);
       console.log('OTP verification result:', result);
 
     if (result.success && result.userId) {
@@ -69,30 +103,34 @@ export default function LoginPage() {
       const userExists = await checkUserExists(result.userId);
         console.log('User exists in database:', userExists);
       
-      if (userExists) {
-          // User exists - redirect to dashboard
+        if (userExists) {
+          // User exists - check role and redirect accordingly
           toast.success('Login successful!', { duration: 3000 });
-          console.log('✓ User found. Checking session...');
+          console.log('✓ User found. Checking role...');
           
-          // Check if session exists
-          const { data: { session } } = await supabase.auth.getSession();
-          console.log('Current session:', session ? 'EXISTS' : 'NOT FOUND');
+          // Get user role from database
+          const { data: userData } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', result.userId)
+            .single();
           
-          if (!session) {
-            console.error('❌ WARNING: No session found after OTP verification!');
-            toast.error('Session error. Please try logging in again.');
-            setLoading(false);
-            return;
-          }
+          const userRole = userData?.role || 'user';
+          console.log('User role:', userRole);
           
-          console.log('✓ Session confirmed. Redirecting to dashboard...');
+          // Redirect based on role
+          const redirectPath = (userRole === 'admin' || userRole === 'super_admin') 
+            ? '/admin' 
+            : '/dashboard';
           
-          // Wait a bit more for cookies to be set
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          console.log('✓ Redirecting to:', redirectPath);
           
-          console.log('→ Executing redirect NOW');
-          window.location.replace('/dashboard');
-      } else {
+          // Small delay for better UX
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          console.log('→ Executing redirect NOW to', redirectPath);
+          window.location.replace(redirectPath);
+        } else {
           // New user - ask for name
           console.log('⚠ User profile not found, requesting name');
         setUserId(result.userId);
@@ -122,16 +160,30 @@ export default function LoginPage() {
     setLoading(true);
     
     try {
-      console.log('Creating user profile:', { userId, name, email });
-    const result = await createOrUpdateUser(userId, name, email);
+      console.log('Creating user profile:', { userId, name, emailOrPhone });
+    const result = await createOrUpdateUser(userId, name, emailOrPhone);
 
-    if (result.success) {
+      if (result.success) {
         toast.success('Profile created successfully! Redirecting...');
+        
+        // Get user role (new users are always 'user' by default)
+        const { data: userData } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', userId)
+          .single();
+        
+        const redirectPath = (userData?.role === 'admin' || userData?.role === 'super_admin') 
+          ? '/admin' 
+          : '/dashboard';
+        
+        console.log('New user created, redirecting to:', redirectPath);
+        
         // Use window.location for reliable redirect
         setTimeout(() => {
-          window.location.href = '/dashboard';
+          window.location.replace(redirectPath);
         }, 1000);
-    } else {
+      } else {
         console.error('Profile creation failed:', result.error);
       toast.error(result.error || 'Failed to create profile. Please try again.');
       }
@@ -158,36 +210,91 @@ export default function LoginPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl">
-              {step === 'email' && 'Welcome Back'}
+              {step === 'input' && 'Welcome Back'}
               {step === 'otp' && 'Verify OTP'}
               {step === 'name' && 'Complete Your Profile'}
             </CardTitle>
             <CardDescription>
-              {step === 'email' && 'Enter your email to receive a verification code'}
-              {step === 'otp' && 'Enter the verification code sent to your email'}
+              {step === 'input' && (authMethod === 'email' 
+                ? 'Enter your email to receive a verification code'
+                : 'Enter your phone number to receive an OTP')}
+              {step === 'otp' && (authMethod === 'email'
+                ? 'Enter the verification code sent to your email'
+                : 'Enter the verification code sent to your phone')}
               {step === 'name' && 'Tell us your name to get started'}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {step === 'email' && (
+            {step === 'input' && (
               <form onSubmit={handleSendOTP} className="space-y-4">
+                {/* Auth Method Toggle */}
+                <div className="flex gap-2 p-1 bg-slate-100 rounded-lg">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthMethod('email');
+                      setEmailOrPhone('');
+                    }}
+                    className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                      authMethod === 'email'
+                        ? 'bg-white text-slate-900 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <Mail className="w-4 h-4 inline mr-2" />
+                    Email
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthMethod('phone');
+                      setEmailOrPhone('');
+                    }}
+                    className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                      authMethod === 'phone'
+                        ? 'bg-white text-slate-900 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <Phone className="w-4 h-4 inline mr-2" />
+                    Phone
+                  </button>
+                </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
+                  <Label htmlFor="input">
+                    {authMethod === 'email' ? 'Email Address' : 'Phone Number'}
+                  </Label>
                   <div className="relative">
+                    {authMethod === 'email' ? (
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                    ) : (
                     <Phone className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                    )}
                     <Input
-                      id="email"
-                      type="email"
-                      placeholder="your.email@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      id="input"
+                      type={authMethod === 'email' ? 'email' : 'tel'}
+                      placeholder={
+                        authMethod === 'email'
+                          ? 'your.email@example.com'
+                          : '9876543210'
+                      }
+                      value={emailOrPhone}
+                      onChange={(e) => {
+                        const value = authMethod === 'phone'
+                          ? e.target.value.replace(/\D/g, '').slice(0, 10)
+                          : e.target.value;
+                        setEmailOrPhone(value);
+                      }}
                       className="pl-10"
                       required
                       disabled={loading}
                     />
                   </div>
                   <p className="text-xs text-slate-500">
-                    We'll send a verification code to your email
+                    {authMethod === 'email'
+                      ? "We'll send a verification code to your email"
+                      : "We'll send an OTP to your phone number"}
                   </p>
                 </div>
                 <Button type="submit" className="w-full" size="lg" disabled={loading}>
@@ -214,7 +321,7 @@ export default function LoginPage() {
                     />
                   </div>
                   <p className="text-xs text-slate-500">
-                    Verification code sent to {email}
+                    Verification code sent to {authMethod === 'email' ? emailOrPhone : `+91 ${emailOrPhone}`}
                   </p>
                 </div>
                 <Button type="submit" className="w-full" size="lg" disabled={loading}>
@@ -231,10 +338,13 @@ export default function LoginPage() {
                   type="button"
                   variant="ghost"
                   className="w-full"
-                  onClick={() => setStep('email')}
+                  onClick={() => {
+                    setStep('input');
+                    setOtp('');
+                  }}
                   disabled={loading}
                 >
-                  Change Email Address
+                  Change {authMethod === 'email' ? 'Email' : 'Phone Number'}
                 </Button>
               </form>
             )}

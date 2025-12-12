@@ -102,11 +102,17 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
             )}
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile menu button - Touch-friendly (44x44px minimum) */}
           <button
             type="button"
-            className="lg:hidden p-2 text-slate-700 hover:bg-slate-100 rounded-lg"
+            className="lg:hidden p-3 text-slate-700 hover:bg-slate-100 active:bg-slate-200 rounded-lg transition-colors touch-manipulation"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+            aria-expanded={mobileMenuOpen}
+            style={{
+              minWidth: '44px',
+              minHeight: '44px',
+            }}
           >
             {mobileMenuOpen ? (
               <X className="h-6 w-6" />
@@ -117,37 +123,40 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu - Enhanced for touch */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-slate-200 bg-white shadow-lg">
-          <div className="space-y-1 px-4 py-4">
+        <div className="lg:hidden border-t border-slate-200 bg-white shadow-lg max-h-[calc(100vh-80px)] overflow-y-auto">
+          <div className="space-y-2 px-4 py-4">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  'block px-3 py-2 text-base font-medium rounded-md',
+                  'block px-4 py-3 text-base font-medium rounded-lg transition-colors touch-manipulation',
                   isActive(item.href)
                     ? 'text-slate-900 bg-slate-100'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    : 'text-slate-600 active:bg-slate-50 active:text-slate-900'
                 )}
                 onClick={() => setMobileMenuOpen(false)}
+                style={{
+                  minHeight: '44px',
+                }}
               >
                 {item.name}
               </Link>
             ))}
             
-            <div className="mt-4 pt-4 border-t border-slate-200 space-y-2">
+            <div className="mt-4 pt-4 border-t border-slate-200 space-y-3">
               {user ? (
                 <>
-                  <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full justify-start text-slate-700 hover:text-slate-900">
+                  <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="block">
+                    <Button variant="ghost" className="w-full justify-start text-slate-700 active:bg-slate-100 min-h-[48px] text-base">
                       Dashboard
                     </Button>
                   </Link>
                   {user.role === 'admin' || user.role === 'super_admin' && (
-                    <Link href="/admin" onClick={() => setMobileMenuOpen(false)}>
-                      <Button variant="ghost" className="w-full justify-start text-slate-700 hover:text-slate-900">
+                    <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="block">
+                      <Button variant="ghost" className="w-full justify-start text-slate-700 active:bg-slate-100 min-h-[48px] text-base">
                         Admin
                       </Button>
                     </Link>
@@ -158,20 +167,20 @@ export default function Navbar({ user, onLogout }: NavbarProps) {
                       onLogout?.();
                       setMobileMenuOpen(false);
                     }}
-                    className="w-full justify-start text-slate-700 hover:text-slate-900"
+                    className="w-full justify-start text-slate-700 active:bg-slate-100 min-h-[48px] text-base"
                   >
                     Logout
                   </Button>
                 </>
               ) : (
                 <>
-                  <Link href="/contact" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="outline" className="w-full">
+                  <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="block">
+                    <Button variant="outline" className="w-full min-h-[48px] text-base">
                       Talk to Sales
                     </Button>
                   </Link>
-                  <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
-                    <Button className="w-full bg-slate-900 text-white hover:bg-slate-800">
+                  <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)} className="block">
+                    <Button className="w-full bg-slate-900 text-white hover:bg-slate-800 active:bg-slate-700 min-h-[48px] text-base">
                       Login
                     </Button>
                   </Link>

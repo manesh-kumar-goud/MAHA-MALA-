@@ -50,11 +50,18 @@ export default function AdminDashboard() {
 
   const checkAuth = async () => {
     const currentUser = await getCurrentUser();
-    if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'super_admin')) {
-      toast.error('Access denied. Admin privileges required.');
-      router.push('/dashboard');
+    if (!currentUser) {
+      toast.error('Please login to continue.');
+      router.push('/auth/login');
       return;
     }
+    
+    if (currentUser.role !== 'admin' && currentUser.role !== 'super_admin') {
+      toast.error('Access denied. Admin privileges required.');
+      router.push('/auth/login');
+      return;
+    }
+    
     setUser(currentUser);
     await fetchStats();
     setLoading(false);

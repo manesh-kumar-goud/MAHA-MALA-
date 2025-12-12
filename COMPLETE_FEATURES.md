@@ -65,8 +65,19 @@
 ✅ Working hours display
 ✅ Quick response info
 
-### 9. **Privacy Policy** (`/privacy`) - Template ready
-### 10. **Terms of Service** (`/terms`) - Template ready
+### 9. **Privacy Policy** (`/privacy`)
+✅ Complete privacy policy page
+✅ GDPR-compliant content
+✅ Data protection information
+✅ User rights section
+✅ Contact information
+
+### 10. **Terms of Service** (`/terms`)
+✅ Complete terms of service page
+✅ User agreement terms
+✅ Referral program terms
+✅ Liability disclaimers
+✅ Contact information
 
 ---
 

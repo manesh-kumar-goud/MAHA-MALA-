@@ -45,6 +45,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       router.push('/auth/login');
       return;
     }
+    
+    // If user is admin, redirect to admin dashboard
+    if (currentUser.role === 'admin' || currentUser.role === 'super_admin') {
+      toast.error('Please use the Admin Panel. Redirecting...');
+      router.push('/admin');
+      return;
+    }
+    
     setUser(currentUser);
     setLoading(false);
   };
@@ -64,10 +72,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { name: 'Add Lead', href: '/dashboard/leads/new', icon: Plus },
     { name: 'My Wallet', href: '/dashboard/wallet', icon: Wallet },
     { name: 'Leaderboard', href: '/dashboard/leaderboard', icon: Trophy },
-  ];
-
-  const adminNavigation = [
-    { name: 'Admin Panel', href: '/admin', icon: Shield },
   ];
 
   const isActive = (href: string) => {
@@ -117,32 +121,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </Link>
             );
           })}
-
-          {/* Admin Navigation - Only for admin/super_admin */}
-          {user && (user.role === 'admin' || user.role === 'super_admin') && (
-            <>
-              <div className="my-4 border-t border-slate-800" />
-              {adminNavigation.map((item) => {
-                const Icon = item.icon;
-                const active = isActive(item.href);
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={cn(
-                      'flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-colors',
-                      active
-                        ? 'bg-purple-600 text-white'
-                        : 'text-slate-300 hover:bg-purple-800 hover:text-white'
-                    )}
-                  >
-                    <Icon className="h-5 w-5" />
-                    <span>{item.name}</span>
-                  </Link>
-                );
-              })}
-            </>
-          )}
         </nav>
 
         <div className="p-4 border-t border-slate-800">
@@ -202,33 +180,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   </Link>
                 );
               })}
-
-              {/* Admin Navigation - Mobile - Only for admin/super_admin */}
-              {user && (user.role === 'admin' || user.role === 'super_admin') && (
-                <>
-                  <div className="my-4 border-t border-slate-800" />
-                  {adminNavigation.map((item) => {
-                    const Icon = item.icon;
-                    const active = isActive(item.href);
-                    return (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        onClick={() => setSidebarOpen(false)}
-                        className={cn(
-                          'flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-colors',
-                          active
-                            ? 'bg-purple-600 text-white'
-                            : 'text-slate-300 hover:bg-purple-800 hover:text-white'
-                        )}
-                      >
-                        <Icon className="h-5 w-5" />
-                        <span>{item.name}</span>
-                      </Link>
-                    );
-                  })}
-                </>
-              )}
             </nav>
 
             <div className="p-4 border-t border-slate-800">

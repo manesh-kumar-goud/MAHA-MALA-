@@ -81,10 +81,10 @@ export default function HomePage() {
   ];
 
   const stats = [
-    { value: 10000, label: 'Installations', suffix: '+' },
-    { value: 50, label: 'Savings Generated', prefix: '₹', suffix: ' Cr+' },
-    { value: 98, label: 'Customer Satisfaction', suffix: '%' },
-    { value: 500, label: 'Active Referrers', suffix: '+' },
+    { value: 2400, label: 'Installations', suffix: '+' },
+    { value: 8.5, label: 'Savings Generated', prefix: '₹', suffix: ' Cr+' },
+    { value: 92, label: 'Customer Satisfaction', suffix: '%' },
+    { value: 850, label: 'Active Referrers', suffix: '+' },
   ];
 
   const testimonials = [
@@ -110,7 +110,7 @@ export default function HomePage() {
       role: 'Referral Partner',
       image: 'AP',
       rating: 5,
-      text: 'Great referral program! I have earned over ₹50,000 by referring customers. The process is transparent and payouts are quick.',
+      text: 'Excellent referral program! I have earned ₹32,000 in the last 6 months by referring 8 customers. Transparent process and timely payouts.',
     },
   ];
 
@@ -360,10 +360,10 @@ export default function HomePage() {
                 {/* Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   <div className="text-sm font-semibold text-sky-300 mb-2 uppercase tracking-wider">Trust & Reliability</div>
-                  <div className="text-4xl font-bold text-white mb-2">10,000+</div>
+                  <div className="text-4xl font-bold text-white mb-2">2,400+</div>
                   <div className="text-base font-medium text-white/90 mb-3">Happy Customers</div>
                   <div className="text-xs text-white/70 leading-relaxed">
-                    Join thousands of satisfied customers across India who trust our solar solutions
+                    Growing network of satisfied customers across Maharashtra who trust our expertise
                   </div>
                 </div>
               </div>
@@ -626,7 +626,7 @@ export default function HomePage() {
       </section>
 
       {/* Referral Program Section - Professional Design */}
-      <section className="py-24 bg-slate-900 relative overflow-hidden">
+      <section className="py-24 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
         {/* Subtle background pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
@@ -641,14 +641,14 @@ export default function HomePage() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm font-semibold mb-4">
-                <Award className="h-4 w-4" />
+              <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-sm font-bold mb-6 shadow-xl">
+                <Award className="h-5 w-5" />
                 Referral Program
               </div>
-              <h2 className="text-3xl font-bold text-white sm:text-4xl lg:text-5xl mb-4">
+              <h2 className="text-4xl font-bold text-white sm:text-5xl lg:text-6xl mb-6" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.3)' }}>
                 Join Our Referral Program
               </h2>
-              <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+              <p className="text-xl text-slate-200 max-w-2xl mx-auto font-medium">
                 Earn rewards by helping others switch to solar energy
               </p>
             </motion.div>
@@ -669,13 +669,13 @@ export default function HomePage() {
                 }}
                 whileHover={{ y: -6 }}
               >
-                <Card className="h-full bg-white/5 backdrop-blur-sm border-white/10 hover:bg-white/10 transition-all duration-300">
-                  <CardHeader>
-                    <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-white/10">
-                      <feature.icon className="h-6 w-6 text-white" />
+                <Card className="h-full bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/15 hover:border-white/30 transition-all duration-300 shadow-xl">
+                  <CardHeader className="pb-4">
+                    <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg">
+                      <feature.icon className="h-7 w-7 text-white" />
                     </div>
-                    <CardTitle className="text-white mb-2">{feature.title}</CardTitle>
-                    <CardDescription className="text-slate-300">
+                    <CardTitle className="text-white text-xl mb-3 font-bold">{feature.title}</CardTitle>
+                    <CardDescription className="text-slate-200 text-base leading-relaxed">
                       {feature.description}
                     </CardDescription>
                   </CardHeader>
@@ -693,9 +693,9 @@ export default function HomePage() {
             className="text-center"
           >
             <Link href="/auth/login">
-              <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100">
+              <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100 font-bold text-lg h-14 px-8 shadow-2xl">
                 Start Earning Today
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
           </motion.div>

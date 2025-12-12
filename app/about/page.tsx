@@ -35,10 +35,10 @@ export default function AboutPage() {
   ];
 
   const stats = [
-    { icon: Users, value: '10,000+', label: 'Happy Customers' },
-    { icon: Zap, value: '50 MW+', label: 'Installed Capacity' },
-    { icon: TrendingUp, value: '98%', label: 'Satisfaction Rate' },
-    { icon: Target, value: '15+', label: 'Years Experience' },
+    { icon: Users, value: '2,400+', label: 'Happy Customers' },
+    { icon: Zap, value: '12 MW+', label: 'Installed Capacity' },
+    { icon: TrendingUp, value: '92%', label: 'Satisfaction Rate' },
+    { icon: Target, value: '8+', label: 'Years Experience' },
   ];
 
   return (

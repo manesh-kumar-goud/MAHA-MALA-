@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
+import BackToTop from '@/components/BackToTop';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -41,6 +42,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         {children}
+        <BackToTop />
         <Toaster
           position="top-right"
           toastOptions={{
@@ -48,6 +50,9 @@ export default function RootLayout({
             style: {
               background: '#363636',
               color: '#fff',
+              fontSize: '16px',
+              padding: '16px',
+              minHeight: '44px',
             },
             success: {
               duration: 3000,
