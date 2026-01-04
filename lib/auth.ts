@@ -1,4 +1,5 @@
 import { supabase } from './supabase/client';
+import type { User } from './types';
 
 export interface AuthUser {
   id: string;
@@ -53,6 +54,9 @@ export async function verifyOTP(
 
     if (isEmail) {
       // Verify email OTP with Supabase
+      if (!supabase) {
+        return { success: false, error: 'Database connection not available' };
+      }
       const { data, error } = await supabase.auth.verifyOtp({
         email: emailOrPhone,
         token: otp,
@@ -89,7 +93,11 @@ export async function verifyOTP(
       const phoneNumber = firebaseUser.phoneNumber;
       
       // Check if user exists in Supabase by phone number
-      const { data: existingUser } = await supabase
+      if (!supabase) {
+        return { success: false, error: 'Database connection not available' };
+      }
+      const db = supabase as any;
+      const { data: existingUser } = await db
         .from('users')
         .select('id')
         .eq('phone_number', phoneNumber)
@@ -101,7 +109,7 @@ export async function verifyOTP(
         userId = existingUser.id;
         // Update user ID to Firebase UID if different (for consistency)
         if (existingUser.id !== firebaseUser.uid) {
-          await supabase
+          await db
             .from('users')
             .update({ id: firebaseUser.uid })
             .eq('id', existingUser.id);
@@ -109,7 +117,7 @@ export async function verifyOTP(
         }
       } else {
         // Create new user in Supabase with Firebase UID
-        const { data: newUser, error: insertError } = await supabase
+        const { data: newUser, error: insertError } = await db
           .from('users')
           .insert({
             id: firebaseUser.uid,
@@ -121,7 +129,7 @@ export async function verifyOTP(
 
         if (insertError) {
           // If insert fails (maybe duplicate), try to get existing user
-          const { data: userData } = await supabase
+          const { data: userData } = await db
             .from('users')
             .select('id')
             .eq('phone_number', phoneNumber)
@@ -153,7 +161,7 @@ export async function verifyOTP(
   }
 }
 
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<User | null> {
   try {
     // Check Firebase auth first (for phone users) - client-side only
     if (typeof window !== 'undefined') {
@@ -169,7 +177,11 @@ export async function getCurrentUser() {
         
         if (phoneNumber) {
           // User authenticated via Firebase phone
-          const { data: userData, error } = await supabase
+          if (!supabase) {
+            return null;
+          }
+          const db = supabase as any;
+          const { data: userData, error } = await db
             .from('users')
             .select('*')
             .eq('phone_number', phoneNumber)
@@ -187,6 +199,9 @@ export async function getCurrentUser() {
     }
 
     // Check Supabase auth (for email users)
+    if (!supabase) {
+      return null;
+    }
     const { data: { session } } = await supabase.auth.getSession();
     
     if (!session?.user) {
@@ -194,7 +209,8 @@ export async function getCurrentUser() {
     }
 
     // Get user details from database
-    const { data: userData, error } = await supabase
+    const db = supabase as any;
+    const { data: userData, error } = await db
       .from('users')
       .select('*')
       .eq('id', session.user.id)
@@ -219,10 +235,14 @@ export async function getCurrentUser() {
 
 export async function createOrUpdateUser(userId: string, name: string, emailOrPhone: string) {
   try {
+    if (!supabase) {
+      return { success: false, error: 'Database connection not available' };
+    }
+    const db = supabase as any;
     const isEmail = emailOrPhone.includes('@');
     
     // First, check if user already exists
-    const { data: existingUser } = await supabase
+    const { data: existingUser } = await db
       .from('users')
       .select('id')
       .eq('id', userId)
@@ -230,7 +250,7 @@ export async function createOrUpdateUser(userId: string, name: string, emailOrPh
 
     if (existingUser) {
       // User exists, update it
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('users')
         .update({
           name: name,
@@ -249,7 +269,7 @@ export async function createOrUpdateUser(userId: string, name: string, emailOrPh
       return { success: true, user: data };
     } else {
       // User doesn't exist, insert new one
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('users')
         .insert({
           id: userId,
@@ -286,6 +306,9 @@ export async function signOut() {
     }
 
     // Sign out from Supabase
+    if (!supabase) {
+      return { success: false, error: 'Database connection not available' };
+    }
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
     
@@ -298,7 +321,11 @@ export async function signOut() {
 
 export async function checkUserExists(userId: string): Promise<boolean> {
   try {
-    const { data, error } = await supabase
+    if (!supabase) {
+      return false;
+    }
+    const db = supabase as any;
+    const { data, error } = await db
       .from('users')
       .select('id, name, email, phone_number')
       .eq('id', userId)

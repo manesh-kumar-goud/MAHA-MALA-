@@ -4,26 +4,27 @@
 @import "tailwindcss";
 
 :root {
-  /* Professional Enterprise Color Palette */
-  --color-primary: #0F172A;        /* Slate 900 - Deep Navy */
-  --color-secondary: #1E293B;      /* Slate 800 - Charcoal */
-  --color-accent: #0EA5E9;         /* Sky 500 - Professional Blue */
-  --color-accent-subtle: #10B981;  /* Emerald 500 - Success Green */
+  /* Emerald/Green Color Palette */
+  --color-primary: #10B981;        /* Emerald 600 */
+  --color-primary-dark: #059669;    /* Emerald 700 */
+  --color-primary-light: #34D399;  /* Emerald 500 */
+  --color-secondary: #6EE7B7;       /* Emerald 400 */
+  --color-accent: #A7F3D0;         /* Emerald 300 */
+  --color-accent-subtle: #D1FAE5;  /* Emerald 200 */
   --color-background: #FFFFFF;     /* Pure White */
-  --color-surface: #F8FAFC;        /* Slate 50 - Light Gray */
-  --color-border: #E2E8F0;         /* Slate 200 - Border */
-  --color-text-primary: #0F172A;   /* Slate 900 - Primary Text */
-  --color-text-secondary: #475569; /* Slate 600 - Secondary Text */
-  --color-text-muted: #94A3B8;     /* Slate 400 - Muted Text */
+  --color-surface: #ECFDF5;        /* Emerald 50 */
+  --color-border: #D1FAE5;         /* Emerald 200 */
+  --color-text-primary: #059669;   /* Emerald 700 */
+  --color-text-secondary: #34D399; /* Emerald 500 */
+  --color-text-muted: #A7F3D0;     /* Emerald 300 */
   
-  /* Professional Gradients */
-  --gradient-primary: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-  --gradient-accent: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%);
-  --gradient-success: linear-gradient(135deg, #10B981 0%, #059669 100%);
-  --gradient-subtle: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
-  --gradient-mesh: radial-gradient(at 40% 20%, rgba(14, 165, 233, 0.05) 0px, transparent 50%),
-                   radial-gradient(at 80% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
-                   radial-gradient(at 0% 50%, rgba(15, 23, 42, 0.03) 0px, transparent 50%);
+  /* Emerald Gradients */
+  --gradient-primary: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  --gradient-accent: linear-gradient(135deg, #34D399 0%, #10B981 100%);
+  --gradient-subtle: linear-gradient(180deg, #ECFDF5 0%, #FFFFFF 100%);
+  --gradient-mesh: radial-gradient(at 40% 20%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
+                   radial-gradient(at 80% 0%, rgba(16, 185, 129, 0.03) 0px, transparent 50%),
+                   radial-gradient(at 0% 50%, rgba(16, 185, 129, 0.02) 0px, transparent 50%);
 }
 
 body {
@@ -55,18 +56,34 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gradient-to-b from-orange-400 to-orange-600 rounded-full;
+  @apply bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-full;
   border: 2px solid transparent;
   background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply from-orange-500 to-orange-700;
+  @apply from-emerald-600 to-emerald-700;
 }
 
 /* Smooth scroll */
 html {
   scroll-behavior: smooth;
+}
+
+/* Horizontal Scroll Styles */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Smooth horizontal scroll */
+.overflow-x-auto {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Premium Animations */
@@ -137,6 +154,20 @@ html {
   100% {
     background-position: 1000px 0;
   }
+}
+
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
 }
 
 @keyframes pulse-glow {

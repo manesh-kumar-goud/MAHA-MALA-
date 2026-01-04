@@ -54,7 +54,12 @@ export default function AdminWithdrawalsPage() {
 
   const fetchWithdrawals = async () => {
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { data, error } = await db
         .from('withdrawals')
         .select(`
           *,
@@ -87,6 +92,12 @@ export default function AdminWithdrawalsPage() {
 
     setProcessing(true);
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        setProcessing(false);
+        return;
+      }
+      const db = supabase as any;
       const updates: any = {
         status: newStatus,
         processed_by: user.id,
@@ -98,7 +109,7 @@ export default function AdminWithdrawalsPage() {
         updates.transaction_id = transactionId.trim();
       }
 
-      const { error } = await supabase
+      const { error } = await db
         .from('withdrawals')
         .update(updates)
         .eq('id', withdrawalId);
@@ -107,7 +118,7 @@ export default function AdminWithdrawalsPage() {
 
       // Add reward history entry for withdrawal
       if (newStatus === 'completed' && selectedWithdrawal) {
-        await supabase.from('rewards_history').insert([
+        await db.from('rewards_history').insert([
           {
             user_id: selectedWithdrawal.user_id,
             amount: selectedWithdrawal.amount,

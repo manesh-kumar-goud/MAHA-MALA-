@@ -58,6 +58,10 @@ export default function AdminAnnouncementsPage() {
 
   const fetchAnnouncements = async () => {
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
       const { data, error } = await supabase
         .from('announcements')
         .select('*')
@@ -83,6 +87,12 @@ export default function AdminAnnouncementsPage() {
     setSubmitting(true);
 
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        setSubmitting(false);
+        return;
+      }
+      const db = supabase as any;
       const announcementData = {
         title: formData.title.trim(),
         content: formData.content.trim(),
@@ -97,7 +107,7 @@ export default function AdminAnnouncementsPage() {
       };
 
       if (editingId) {
-        const { error } = await supabase
+        const { error } = await db
           .from('announcements')
           .update(announcementData)
           .eq('id', editingId);
@@ -105,7 +115,7 @@ export default function AdminAnnouncementsPage() {
         if (error) throw error;
         toast.success('Announcement updated successfully');
       } else {
-        const { error } = await supabase.from('announcements').insert([announcementData]);
+        const { error } = await db.from('announcements').insert([announcementData]);
 
         if (error) throw error;
         toast.success('Announcement created successfully');
@@ -141,6 +151,10 @@ export default function AdminAnnouncementsPage() {
     if (!confirm('Are you sure you want to delete this announcement?')) return;
 
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
       const { error } = await supabase.from('announcements').delete().eq('id', id);
 
       if (error) throw error;

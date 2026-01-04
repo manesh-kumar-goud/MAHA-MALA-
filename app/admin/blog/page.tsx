@@ -58,7 +58,12 @@ export default function AdminBlogPage() {
 
   const fetchPosts = async () => {
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { data, error } = await db
         .from('blog_posts')
         .select('*')
         .order('created_at', { ascending: false });
@@ -82,6 +87,12 @@ export default function AdminBlogPage() {
     setSubmitting(true);
 
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        setSubmitting(false);
+        return;
+      }
+      const db = supabase as any;
       const slug = formData.slug.trim() || generateSlug(formData.title);
       const tags = formData.tags.split(',').map((t) => t.trim()).filter(Boolean);
 
@@ -100,7 +111,7 @@ export default function AdminBlogPage() {
       };
 
       if (editingId) {
-        const { error } = await supabase
+        const { error } = await db
           .from('blog_posts')
           .update(postData)
           .eq('id', editingId);
@@ -108,7 +119,7 @@ export default function AdminBlogPage() {
         if (error) throw error;
         toast.success('Blog post updated successfully');
       } else {
-        const { error } = await supabase.from('blog_posts').insert([postData]);
+        const { error } = await db.from('blog_posts').insert([postData]);
 
         if (error) throw error;
         toast.success('Blog post created successfully');
@@ -144,7 +155,12 @@ export default function AdminBlogPage() {
     if (!confirm('Are you sure you want to delete this blog post?')) return;
 
     try {
-      const { error } = await supabase.from('blog_posts').delete().eq('id', id);
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { error } = await db.from('blog_posts').delete().eq('id', id);
 
       if (error) throw error;
 

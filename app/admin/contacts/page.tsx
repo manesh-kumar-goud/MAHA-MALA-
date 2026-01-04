@@ -50,7 +50,12 @@ export default function AdminContactsPage() {
 
   const fetchInquiries = async () => {
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { data, error } = await db
         .from('contact_inquiries')
         .select('*')
         .order('created_at', { ascending: false });
@@ -72,6 +77,11 @@ export default function AdminContactsPage() {
 
   const handleUpdateStatus = async (id: string, newStatus: string) => {
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
       const updates: any = {
         status: newStatus,
         updated_at: new Date().toISOString(),
@@ -81,7 +91,7 @@ export default function AdminContactsPage() {
         updates.responded_at = new Date().toISOString();
       }
 
-      const { error } = await supabase
+      const { error } = await db
         .from('contact_inquiries')
         .update(updates)
         .eq('id', id);

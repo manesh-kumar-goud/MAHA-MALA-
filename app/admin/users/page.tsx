@@ -52,7 +52,12 @@ export default function AdminUsersPage() {
 
   const fetchUsers = async () => {
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { data, error } = await db
         .from('users')
         .select('*')
         .order('created_at', { ascending: false });
@@ -86,7 +91,12 @@ export default function AdminUsersPage() {
 
   const handleUpdateRole = async (userId: string, newRole: string) => {
     try {
-      const { error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { error } = await db
         .from('users')
         .update({ role: newRole })
         .eq('id', userId);
@@ -104,7 +114,12 @@ export default function AdminUsersPage() {
 
   const handleToggleActive = async (userId: string, isActive: boolean) => {
     try {
-      const { error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { error } = await db
         .from('users')
         .update({ is_active: !isActive })
         .eq('id', userId);

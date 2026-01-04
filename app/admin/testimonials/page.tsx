@@ -57,7 +57,12 @@ export default function AdminTestimonialsPage() {
 
   const fetchTestimonials = async () => {
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { data, error } = await db
         .from('testimonials')
         .select('*')
         .order('display_order');
@@ -80,6 +85,12 @@ export default function AdminTestimonialsPage() {
     setSubmitting(true);
 
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        setSubmitting(false);
+        return;
+      }
+      const db = supabase as any;
       const testimonialData = {
         customer_name: formData.customer_name.trim(),
         customer_location: formData.customer_location.trim() || null,
@@ -93,11 +104,11 @@ export default function AdminTestimonialsPage() {
       };
 
       if (editingId) {
-        const { error } = await supabase.from('testimonials').update(testimonialData).eq('id', editingId);
+        const { error } = await db.from('testimonials').update(testimonialData).eq('id', editingId);
         if (error) throw error;
         toast.success('Testimonial updated successfully');
       } else {
-        const { error } = await supabase.from('testimonials').insert([testimonialData]);
+        const { error } = await db.from('testimonials').insert([testimonialData]);
         if (error) throw error;
         toast.success('Testimonial created successfully');
       }
@@ -132,7 +143,12 @@ export default function AdminTestimonialsPage() {
     if (!confirm('Are you sure you want to delete this testimonial?')) return;
 
     try {
-      const { error } = await supabase.from('testimonials').delete().eq('id', id);
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { error } = await db.from('testimonials').delete().eq('id', id);
       if (error) throw error;
       toast.success('Testimonial deleted successfully');
       await fetchTestimonials();

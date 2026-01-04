@@ -47,7 +47,12 @@ export default function BankDetailsPage() {
 
   const fetchBankDetails = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { data, error } = await db
         .from('bank_details')
         .select('*')
         .eq('user_id', userId)
@@ -96,7 +101,13 @@ export default function BankDetailsPage() {
     setSubmitting(true);
 
     try {
-      const { error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        setSubmitting(false);
+        return;
+      }
+      const db = supabase as any;
+      const { error } = await db
         .from('bank_details')
         .upsert({
           user_id: user.id,

@@ -33,8 +33,14 @@ export default function AdminLeadDashboardPage() {
     setLoading(true);
 
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        setLoading(false);
+        return;
+      }
+      const db = supabase as any;
       // Fetch rewards
-      const { data: rewardsData, error: rewardsError } = await supabase
+      const { data: rewardsData, error: rewardsError } = await db
         .from('lead_reward_structure')
         .select('*')
         .order('display_order');
@@ -43,7 +49,7 @@ export default function AdminLeadDashboardPage() {
       if (rewardsData) setRewards(rewardsData);
 
       // Fetch FAQs
-      const { data: faqsData, error: faqsError } = await supabase
+      const { data: faqsData, error: faqsError } = await db
         .from('lead_dashboard_faqs')
         .select('*')
         .order('display_order');
@@ -52,7 +58,7 @@ export default function AdminLeadDashboardPage() {
       if (faqsData) setFaqs(faqsData);
 
       // Fetch requirements
-      const { data: reqData, error: reqError } = await supabase
+      const { data: reqData, error: reqError } = await db
         .from('lead_requirements')
         .select('*')
         .order('display_order');
@@ -61,7 +67,7 @@ export default function AdminLeadDashboardPage() {
       if (reqData) setRequirements(reqData);
 
       // Fetch settings
-      const { data: settingsData, error: settingsError } = await supabase
+      const { data: settingsData, error: settingsError } = await db
         .from('lead_dashboard_settings')
         .select('*')
         .order('setting_key');
@@ -79,9 +85,14 @@ export default function AdminLeadDashboardPage() {
 
   const handleSaveReward = async () => {
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
       if (editingId) {
         // Update existing
-        const { error } = await supabase
+        const { error } = await db
           .from('lead_reward_structure')
           .update({
             lead_type: formData.lead_type,
@@ -97,7 +108,7 @@ export default function AdminLeadDashboardPage() {
         toast.success('Reward updated successfully');
       } else {
         // Create new
-        const { error } = await supabase
+        const { error } = await db
           .from('lead_reward_structure')
           .insert({
             lead_type: formData.lead_type,
@@ -124,9 +135,14 @@ export default function AdminLeadDashboardPage() {
 
   const handleSaveFAQ = async () => {
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
       if (editingId) {
         // Update existing
-        const { error } = await supabase
+        const { error } = await db
           .from('lead_dashboard_faqs')
           .update({
             question: formData.question,
@@ -141,7 +157,7 @@ export default function AdminLeadDashboardPage() {
         toast.success('FAQ updated successfully');
       } else {
         // Create new
-        const { error } = await supabase
+        const { error } = await db
           .from('lead_dashboard_faqs')
           .insert({
             question: formData.question,
@@ -167,9 +183,14 @@ export default function AdminLeadDashboardPage() {
 
   const handleSaveRequirement = async () => {
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
       if (editingId) {
         // Update existing
-        const { error } = await supabase
+        const { error } = await db
           .from('lead_requirements')
           .update({
             title: formData.title,
@@ -184,7 +205,7 @@ export default function AdminLeadDashboardPage() {
         toast.success('Requirement updated successfully');
       } else {
         // Create new
-        const { error } = await supabase
+        const { error } = await db
           .from('lead_requirements')
           .insert({
             title: formData.title,
@@ -210,7 +231,12 @@ export default function AdminLeadDashboardPage() {
 
   const handleSaveSetting = async (setting: LeadDashboardSetting) => {
     try {
-      const { error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { error } = await db
         .from('lead_dashboard_settings')
         .update({
           setting_value: setting.setting_value
@@ -230,7 +256,12 @@ export default function AdminLeadDashboardPage() {
     if (!confirm('Are you sure you want to delete this item?')) return;
     
     try {
-      const { error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { error } = await db
         .from(table)
         .delete()
         .eq('id', id);
@@ -246,7 +277,12 @@ export default function AdminLeadDashboardPage() {
 
   const handleToggleActive = async (table: string, id: string, currentStatus: boolean) => {
     try {
-      const { error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { error } = await db
         .from(table)
         .update({ is_active: !currentStatus })
         .eq('id', id);
@@ -262,9 +298,14 @@ export default function AdminLeadDashboardPage() {
 
   const handleMoveItem = async (table: string, id: string, direction: 'up' | 'down', currentOrder: number) => {
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
       const newOrder = direction === 'up' ? currentOrder - 1 : currentOrder + 1;
       
-      const { error } = await supabase
+      const { error } = await db
         .from(table)
         .update({ display_order: newOrder })
         .eq('id', id);

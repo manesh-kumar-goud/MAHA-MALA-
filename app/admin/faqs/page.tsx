@@ -53,7 +53,12 @@ export default function AdminFAQsPage() {
 
   const fetchFAQs = async () => {
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { data, error } = await db
         .from('faqs')
         .select('*')
         .order('display_order');
@@ -76,6 +81,12 @@ export default function AdminFAQsPage() {
     setSubmitting(true);
 
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        setSubmitting(false);
+        return;
+      }
+      const db = supabase as any;
       const faqData = {
         question: formData.question.trim(),
         answer: formData.answer.trim(),
@@ -86,11 +97,11 @@ export default function AdminFAQsPage() {
       };
 
       if (editingId) {
-        const { error } = await supabase.from('faqs').update(faqData).eq('id', editingId);
+        const { error } = await db.from('faqs').update(faqData).eq('id', editingId);
         if (error) throw error;
         toast.success('FAQ updated successfully');
       } else {
-        const { error } = await supabase.from('faqs').insert([faqData]);
+        const { error } = await db.from('faqs').insert([faqData]);
         if (error) throw error;
         toast.success('FAQ created successfully');
       }
@@ -122,7 +133,12 @@ export default function AdminFAQsPage() {
     if (!confirm('Are you sure you want to delete this FAQ?')) return;
 
     try {
-      const { error } = await supabase.from('faqs').delete().eq('id', id);
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { error } = await db.from('faqs').delete().eq('id', id);
       if (error) throw error;
       toast.success('FAQ deleted successfully');
       await fetchFAQs();

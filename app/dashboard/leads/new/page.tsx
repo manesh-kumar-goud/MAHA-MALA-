@@ -77,8 +77,13 @@ export default function NewLeadPage() {
     setSubmitting(true);
 
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
       // Check for duplicate phone number in last 90 days
-      const { data: existingLeads } = await supabase
+      const { data: existingLeads } = await db
         .from('leads')
         .select('id, customer_name')
         .eq('customer_phone', formData.customer_phone)
@@ -91,7 +96,7 @@ export default function NewLeadPage() {
       }
 
       // Insert lead
-      const { data, error } = await supabase
+      const { data, error } = await db
         .from('leads')
         .insert([
           {

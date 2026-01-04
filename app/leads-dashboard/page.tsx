@@ -40,7 +40,13 @@ export default function LeadsDashboardPage() {
     setUserName('');
 
     try {
-      const { data: referrer, error: referrerError } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        setCheckingUser(false);
+        return;
+      }
+      const db = supabase as any;
+      const { data: referrer, error: referrerError } = await db
         .from('users')
         .select('id, name, email')
         .eq('email', formData.referrerEmail.toLowerCase())
@@ -76,8 +82,14 @@ export default function LeadsDashboardPage() {
     setLoading(true);
 
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        setLoading(false);
+        return;
+      }
+      const db = supabase as any;
       // Check for duplicate lead
-      const { data: existingLead } = await supabase
+      const { data: existingLead } = await db
         .from('leads')
         .select('id')
         .eq('customer_phone', formData.customerPhone)
@@ -90,7 +102,7 @@ export default function LeadsDashboardPage() {
       }
 
       // Create lead
-      const { error: leadError } = await supabase
+      const { error: leadError } = await db
         .from('leads')
         .insert({
           referrer_id: userId,

@@ -40,8 +40,13 @@ export default function WalletPage() {
 
   const fetchWalletData = async (userId: string) => {
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
       // Fetch reward history
-      const { data: rewards, error: rewardsError } = await supabase
+      const { data: rewards, error: rewardsError } = await db
         .from('rewards_history')
         .select('*')
         .eq('user_id', userId)
@@ -51,7 +56,7 @@ export default function WalletPage() {
       setRewardHistory(rewards || []);
 
       // Fetch withdrawals
-      const { data: withdrawalsData, error: withdrawalsError } = await supabase
+      const { data: withdrawalsData, error: withdrawalsError } = await db
         .from('withdrawals')
         .select('*')
         .eq('user_id', userId)
@@ -61,7 +66,7 @@ export default function WalletPage() {
       setWithdrawals(withdrawalsData || []);
 
       // Fetch bank details
-      const { data: bank, error: bankError } = await supabase
+      const { data: bank, error: bankError } = await db
         .from('bank_details')
         .select('*')
         .eq('user_id', userId)
@@ -72,8 +77,8 @@ export default function WalletPage() {
       }
 
       // Calculate available balance
-      const totalEarned = rewards?.reduce((sum, r) => sum + (r.type === 'lead_reward' || r.type === 'bonus' ? r.amount : 0), 0) || 0;
-      const totalWithdrawn = rewards?.reduce((sum, r) => sum + (r.type === 'withdrawal' ? r.amount : 0), 0) || 0;
+      const totalEarned = rewards?.reduce((sum: number, r: any) => sum + (r.type === 'lead_reward' || r.type === 'bonus' ? r.amount : 0), 0) || 0;
+      const totalWithdrawn = rewards?.reduce((sum: number, r: any) => sum + (r.type === 'withdrawal' ? r.amount : 0), 0) || 0;
       setAvailableBalance(totalEarned - totalWithdrawn);
     } catch (error) {
       console.error('Error fetching wallet data:', error);

@@ -26,16 +26,32 @@ export default function BlogPage() {
 
   const fetchPosts = async () => {
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        setPosts([]);
+        return;
+      }
+
+      if (!supabase) {
+        setPosts([]);
+        return;
+      }
+      const db = supabase as any;
+      const { data, error } = await db
         .from('blog_posts')
         .select('*')
         .eq('is_published', true)
         .order('published_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        // Silently handle error - show empty state in UI
+        setPosts([]);
+        return;
+      }
+      
       setPosts(data || []);
     } catch (error) {
-      console.error('Error fetching posts:', error);
+      // Silently handle error - show empty state in UI
+      setPosts([]);
     } finally {
       setLoading(false);
     }

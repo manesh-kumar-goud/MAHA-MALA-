@@ -50,14 +50,19 @@ export default function AdminSettingsPage() {
 
   const fetchSettings = async () => {
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { data, error } = await db
         .from('system_settings')
         .select('*');
 
       if (error) throw error;
 
       const settingsObj: Record<string, string> = {};
-      data?.forEach((setting) => {
+      data?.forEach((setting: any) => {
         settingsObj[setting.setting_key] = setting.setting_value;
       });
 
@@ -71,6 +76,12 @@ export default function AdminSettingsPage() {
     setSaving(true);
 
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        setSaving(false);
+        return;
+      }
+      const db = supabase as any;
       const updates = Object.entries(settings).map(([key, value]) => ({
         setting_key: key,
         setting_value: value,
@@ -79,7 +90,7 @@ export default function AdminSettingsPage() {
       }));
 
       for (const update of updates) {
-        const { error } = await supabase
+        const { error } = await db
           .from('system_settings')
           .upsert(update, { onConflict: 'setting_key' });
 

@@ -53,7 +53,12 @@ export default function AdminLeadsPage() {
 
   const fetchLeads = async () => {
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { data, error } = await db
         .from('leads')
         .select(`
           *,
@@ -91,6 +96,12 @@ export default function AdminLeadsPage() {
   const handleStatusUpdate = async (leadId: string, newStatus: string) => {
     setUpdating(true);
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        setUpdating(false);
+        return;
+      }
+      const db = supabase as any;
       const updates: any = {
         status: newStatus,
         updated_at: new Date().toISOString(),
@@ -108,7 +119,7 @@ export default function AdminLeadsPage() {
         updates.rewarded_date = new Date().toISOString();
         
         // Add reward to rewards_history
-        await supabase.from('rewards_history').insert([
+        await db.from('rewards_history').insert([
           {
             user_id: selectedLead.referrer_id,
             lead_id: leadId,
@@ -119,7 +130,7 @@ export default function AdminLeadsPage() {
         ]);
       }
 
-      const { error } = await supabase.from('leads').update(updates).eq('id', leadId);
+      const { error } = await db.from('leads').update(updates).eq('id', leadId);
 
       if (error) throw error;
 

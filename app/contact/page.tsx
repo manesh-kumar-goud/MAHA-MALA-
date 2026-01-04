@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { MapPin, Phone, Mail, Clock, Send, Facebook, Instagram } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, Facebook, Instagram, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -57,7 +57,12 @@ export default function ContactPage() {
     setSubmitting(true);
 
     try {
-      const { error } = await supabase.from('contact_inquiries').insert([
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { error } = await db.from('contact_inquiries').insert([
         {
           name: formData.name.trim(),
           email: formData.email.trim(),
@@ -116,74 +121,83 @@ export default function ContactPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+    <div className="min-h-screen bg-white">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 py-20">
-        <div className="absolute inset-0 bg-grid-pattern opacity-10" />
+      {/* Minimal Hero Section */}
+      <section className="relative overflow-hidden bg-white py-32 border-b border-gray-100">
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
           >
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl mb-6">
-              Get In Touch
+            <h1 className="text-5xl font-light tracking-tight text-gray-900 sm:text-6xl md:text-7xl mb-6">
+              Get In{' '}
+              <span className="font-medium">
+                Touch
+              </span>
             </h1>
-            <p className="mx-auto max-w-3xl text-lg text-blue-100 sm:text-xl">
+            <p className="mx-auto max-w-3xl text-lg text-gray-600 sm:text-xl leading-relaxed font-light">
               Have questions? We're here to help you switch to solar energy
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Contact Info Cards */}
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Minimal Contact Info */}
+      <section className="py-32 bg-white relative overflow-hidden">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {contactInfo.map((info, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: index * 0.1, ease: [0.25, 0.4, 0.25, 1] }}
+                whileHover={{ y: -4, transition: { duration: 0.3 } }}
+                className="group text-center"
               >
-                <Card className="h-full text-center hover-lift">
-                  <CardHeader>
-                    <div className={`mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-gradient-to-br ${info.color}`}>
-                      <info.icon className="h-7 w-7 text-white" />
-                    </div>
-                    <CardTitle className="text-lg">{info.title}</CardTitle>
-                    {info.link ? (
-                      <a href={info.link} className="text-blue-600 hover:underline">
-                        {info.content}
-                      </a>
-                    ) : (
-                      <CardDescription className="text-base">{info.content}</CardDescription>
-                    )}
-                  </CardHeader>
-                </Card>
+                <div className="h-full flex flex-col items-center">
+                  <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-lg bg-gray-100 group-hover:bg-gray-200 transition-colors">
+                    <info.icon className="h-7 w-7 text-gray-700" />
+                  </div>
+                  <h3 className="text-lg font-medium mb-3 text-gray-900">{info.title}</h3>
+                  {info.link ? (
+                    <a href={info.link} className="text-gray-600 hover:text-gray-900 font-light transition-colors">
+                      {info.content}
+                    </a>
+                  ) : (
+                    <p className="text-sm text-gray-600 font-light">{info.content}</p>
+                  )}
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Contact Form */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-2">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Send Us a Message</h2>
-              <p className="text-gray-600 mb-8">
+      {/* Minimal Contact Form */}
+      <section className="py-32 bg-gray-50 relative overflow-hidden">
+        <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-16 lg:grid-cols-2">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: [0.25, 0.4, 0.25, 1] }}
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white text-gray-700 text-xs font-medium tracking-wide uppercase mb-6">
+                Contact Form
+              </div>
+              <h2 className="text-4xl font-light text-gray-900 mb-6">Send Us a Message</h2>
+              <p className="text-lg text-gray-600 mb-8 leading-relaxed font-light">
                 Fill out the form and our team will get back to you within 24 hours.
               </p>
               
-              <Card>
-                <CardContent className="pt-6">
-                  <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="border border-gray-200 bg-white p-8">
+                <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-2">
                       <Label htmlFor="name">
                         Your Name <span className="text-red-500">*</span>
@@ -263,7 +277,7 @@ export default function ContactPage() {
 
                     <Button
                       type="submit"
-                      className="w-full"
+                      className="w-full bg-black text-white hover:bg-gray-900 font-medium shadow-sm hover:shadow-md transition-all duration-300 border border-black"
                       size="lg"
                       disabled={submitting}
                     >
@@ -271,83 +285,77 @@ export default function ContactPage() {
                         <LoadingSpinner size="sm" />
                       ) : (
                         <>
-                          <Send className="mr-2 h-4 w-4" />
+                          <Send className="mr-2 h-5 w-5" />
                           Send Message
                         </>
                       )}
                     </Button>
                   </form>
-                </CardContent>
-              </Card>
-            </div>
+                </div>
+            </motion.div>
 
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Connect With Us</h2>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.4, 0.25, 1] }}
+            >
+              <h2 className="text-4xl font-light text-gray-900 mb-8">Connect With Us</h2>
               
               <div className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Social Media</CardTitle>
-                    <CardDescription>Follow us for updates and solar tips</CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex space-x-4">
+                <div className="border border-gray-200 bg-white p-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-3">Social Media</h3>
+                  <p className="text-sm text-gray-600 mb-4 font-light">Follow us for updates and solar tips</p>
+                  <div className="flex space-x-4">
                     <a
                       href="https://www.facebook.com/p/Mahalakshmi-Solar-Energies-61558430126387/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center h-12 w-12 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                      className="flex items-center justify-center h-12 w-12 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition-all duration-300"
                     >
-                      <Facebook className="h-6 w-6" />
+                      <Facebook className="h-5 w-5" />
                     </a>
                     <a
                       href="https://www.instagram.com/maha.lakshmisolarenergies/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center h-12 w-12 rounded-lg bg-gradient-to-br from-pink-500 to-purple-600 text-white hover:from-pink-600 hover:to-purple-700 transition-colors"
+                      className="flex items-center justify-center h-12 w-12 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition-all duration-300"
                     >
-                      <Instagram className="h-6 w-6" />
+                      <Instagram className="h-5 w-5" />
                     </a>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
 
-                <Card className="bg-blue-50 border-blue-200">
-                  <CardHeader>
-                    <CardTitle>Quick Response</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2 text-sm text-gray-700">
-                      <li className="flex items-center">
-                        <span className="mr-2">✓</span>
-                        Average response time: 2-4 hours
-                      </li>
-                      <li className="flex items-center">
-                        <span className="mr-2">✓</span>
-                        Available Mon-Sat, 9 AM - 6 PM
-                      </li>
-                      <li className="flex items-center">
-                        <span className="mr-2">✓</span>
-                        Emergency support available
-                      </li>
-                    </ul>
-                  </CardContent>
-                </Card>
+                <div className="border border-gray-200 bg-white p-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Quick Response</h3>
+                  <ul className="space-y-3 text-sm text-gray-600">
+                    <li className="flex items-center gap-3">
+                      <CheckCircle2 className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                      <span className="font-light">Average response time: 2-4 hours</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <CheckCircle2 className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                      <span className="font-light">Available Mon-Sat, 9 AM - 6 PM</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <CheckCircle2 className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                      <span className="font-light">Emergency support available</span>
+                    </li>
+                  </ul>
+                </div>
 
-                <Card className="bg-green-50 border-green-200">
-                  <CardHeader>
-                    <CardTitle>Free Consultation</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-gray-700 mb-4">
-                      Book a free on-site consultation with our solar experts. We'll assess your
-                      requirements and provide a customized solution.
-                    </p>
-                    <Button className="w-full" variant="outline">
-                      Schedule Consultation
-                    </Button>
-                  </CardContent>
-                </Card>
+                <div className="border border-gray-200 bg-white p-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Free Consultation</h3>
+                  <p className="text-sm text-gray-600 mb-6 leading-relaxed font-light">
+                    Book a free on-site consultation with our solar experts. We'll assess your
+                    requirements and provide a customized solution.
+                  </p>
+                  <Button className="w-full bg-black text-white hover:bg-gray-900 font-medium shadow-sm hover:shadow-md transition-all duration-300 border border-black" variant="outline">
+                    Schedule Consultation
+                  </Button>
+                </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>

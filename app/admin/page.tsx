@@ -69,39 +69,44 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
       // Fetch users count
-      const { count: usersCount } = await supabase
+      const { count: usersCount } = await db
         .from('users')
         .select('*', { count: 'exact', head: true })
         .eq('role', 'user');
 
       // Fetch leads stats
-      const { data: leads } = await supabase.from('leads').select('status, reward_amount');
+      const { data: leads } = await db.from('leads').select('status, reward_amount');
       
       const totalLeads = leads?.length || 0;
-      const pendingLeads = leads?.filter((l) =>
+      const pendingLeads = leads?.filter((l: any) =>
         ['submitted', 'verified', 'contacted', 'interested'].includes(l.status)
       ).length || 0;
-      const installedLeads = leads?.filter((l) =>
+      const installedLeads = leads?.filter((l: any) =>
         ['installed', 'rewarded'].includes(l.status)
       ).length || 0;
 
       // Fetch total rewards paid
-      const { data: rewards } = await supabase
+      const { data: rewards } = await db
         .from('rewards_history')
         .select('amount, type')
         .eq('type', 'lead_reward');
       
-      const totalRewardsPaid = rewards?.reduce((sum, r) => sum + r.amount, 0) || 0;
+      const totalRewardsPaid = rewards?.reduce((sum: number, r: any) => sum + r.amount, 0) || 0;
 
       // Fetch pending withdrawals
-      const { count: withdrawalsCount } = await supabase
+      const { count: withdrawalsCount } = await db
         .from('withdrawals')
         .select('*', { count: 'exact', head: true })
         .in('status', ['pending', 'processing']);
 
       // Fetch active announcements
-      const { count: announcementsCount } = await supabase
+      const { count: announcementsCount } = await db
         .from('announcements')
         .select('*', { count: 'exact', head: true })
         .eq('is_active', true);

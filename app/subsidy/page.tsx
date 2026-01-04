@@ -24,16 +24,32 @@ export default function SubsidyPage() {
 
   const fetchSubsidies = async () => {
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        setSubsidies([]);
+        return;
+      }
+
+      if (!supabase) {
+        setSubsidies([]);
+        return;
+      }
+      const db = supabase as any;
+      const { data, error } = await db
         .from('subsidy_info')
         .select('*')
         .eq('is_active', true)
         .order('display_order');
 
-      if (error) throw error;
+      if (error) {
+        // Silently handle error - show empty state in UI
+        setSubsidies([]);
+        return;
+      }
+      
       setSubsidies(data || []);
     } catch (error) {
-      console.error('Error fetching subsidies:', error);
+      // Silently handle error - show empty state in UI
+      setSubsidies([]);
     } finally {
       setLoading(false);
     }
@@ -49,37 +65,42 @@ export default function SubsidyPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+    <div className="min-h-screen bg-white">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-green-600 via-green-700 to-green-900 py-20">
-        <div className="absolute inset-0 bg-grid-pattern opacity-10" />
+      {/* Minimal Hero Section */}
+      <section className="relative overflow-hidden bg-white py-32 border-b border-gray-100">
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <Badge className="mb-4 bg-white/20 text-white border-white/30 text-base px-4 py-2">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-gray-50 text-gray-700 text-xs font-medium tracking-wide uppercase mb-6">
               PM Surya Ghar - Muft Bijli Yojana
-            </Badge>
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl mb-6">
-              Government Solar Subsidy
+            </div>
+            <h1 className="text-4xl font-light tracking-tight text-gray-900 sm:text-5xl md:text-6xl mb-6">
+              Government Solar{' '}
+              <span className="font-medium">
+                Subsidy
+              </span>
             </h1>
-            <p className="mx-auto max-w-3xl text-lg text-green-100 sm:text-xl">
+            <p className="mx-auto max-w-3xl text-lg text-gray-600 sm:text-xl font-light">
               Get up to ₹78,000 subsidy on rooftop solar installation
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Subsidy Rates */}
-      <section className="py-16">
+      {/* Subsidy Rates - Minimal Design */}
+      <section className="py-32 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">Subsidy Rates</h2>
-            <p className="mt-4 text-lg text-gray-600">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl font-light text-gray-900 sm:text-5xl mb-6">
+              Subsidy{' '}
+              <span className="font-medium">Rates</span>
+            </h2>
+            <p className="text-lg text-gray-600 font-light">
               Central Financial Assistance for Rooftop Solar Systems
             </p>
           </div>
@@ -89,52 +110,48 @@ export default function SubsidyPage() {
               <LoadingSpinner size="lg" />
             </div>
           ) : (
-            <div className="grid gap-8 md:grid-cols-3">
+            <div className="max-w-5xl mx-auto space-y-4">
               {subsidies.map((subsidy, index) => (
                 <motion.div
                   key={subsidy.id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="group"
                 >
-                  <Card className="h-full border-2 border-green-200 hover:border-green-400 hover-lift">
-                    <CardHeader className="text-center">
-                      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-green-600">
-                        <IndianRupee className="h-8 w-8 text-white" />
+                  <div className="flex flex-col md:flex-row items-start md:items-center gap-6 p-8 border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center gap-4 min-w-[200px]">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
+                        <IndianRupee className="h-6 w-6 text-gray-700" />
                       </div>
-                      <CardTitle className="text-2xl">{subsidy.capacity}</CardTitle>
-                      <div className="text-4xl font-bold text-green-600 my-3">
+                      <div>
+                        <div className="text-base font-medium text-gray-900">{subsidy.capacity}</div>
+                        {subsidy.description && (
+                          <div className="text-xs text-gray-500 font-light">{subsidy.description}</div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-4xl font-light text-gray-900 mb-2">
                         {formatCurrency(subsidy.amount)}
                       </div>
-                      <CardDescription className="text-base">
-                        {subsidy.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      {subsidy.eligibility_criteria && subsidy.eligibility_criteria.length > 0 && (
-                        <div className="space-y-2">
-                          <h4 className="font-semibold text-gray-900 text-sm">Eligibility:</h4>
-                          <ul className="space-y-1">
-                            {subsidy.eligibility_criteria.map((criteria, idx) => (
-                              <li key={idx} className="flex items-start text-xs text-gray-600">
-                                <CheckCircle2 className="h-3 w-3 text-green-500 mt-0.5 mr-1 flex-shrink-0" />
-                                {criteria}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                    </div>
+                    {subsidy.eligibility_criteria && subsidy.eligibility_criteria.length > 0 && (
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <CheckCircle2 className="h-4 w-4 text-gray-400" />
+                        <span className="font-light">Eligible</span>
+                      </div>
+                    )}
+                  </div>
                 </motion.div>
               ))}
             </div>
           )}
 
-          <div className="mt-12 text-center">
-            <div className="rounded-lg bg-yellow-50 border border-yellow-200 p-6 inline-block">
-              <p className="text-yellow-800 font-medium">
+          <div className="mt-16 text-center">
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-6 inline-block">
+              <p className="text-gray-700 font-light">
                 💡 Maximum subsidy of ₹78,000 (for 3 kW + 18,000 × 7 kW)
               </p>
             </div>
@@ -142,87 +159,91 @@ export default function SubsidyPage() {
         </div>
       </section>
 
-      {/* Application Process */}
-      <section className="py-16 bg-white">
+      {/* Application Process - Minimal Design */}
+      <section className="py-32 bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">Application Process</h2>
-            <p className="mt-4 text-lg text-gray-600">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl font-light text-gray-900 sm:text-5xl mb-6">
+              Application{' '}
+              <span className="font-medium">Process</span>
+            </h2>
+            <p className="text-lg text-gray-600 font-light">
               Simple 6-step process to get your subsidy
             </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {processSteps.map((item, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ y: -4, transition: { duration: 0.3 } }}
+                className="group"
               >
-                <Card className="h-full hover-lift">
-                  <CardHeader>
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-green-500 to-green-600 text-xl font-bold text-white">
-                      {item.step}
-                    </div>
-                    <CardTitle className="text-lg">{item.title}</CardTitle>
-                    <CardDescription>{item.description}</CardDescription>
-                  </CardHeader>
-                </Card>
+                <div className="h-full flex flex-col">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-900 text-lg font-light text-white group-hover:bg-gray-800 transition-colors">
+                    {item.step}
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">{item.title}</h3>
+                  <p className="text-sm text-gray-600 font-light">{item.description}</p>
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Required Documents */}
-      <section className="py-16 bg-gray-50">
+      {/* Required Documents - Minimal Design */}
+      <section className="py-32 bg-gray-50">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <Card className="border-2 border-blue-200">
-            <CardHeader>
-              <div className="flex items-center space-x-3">
-                <FileText className="h-8 w-8 text-blue-600" />
-                <div>
-                  <CardTitle className="text-2xl">Required Documents</CardTitle>
-                  <CardDescription>Keep these documents ready for subsidy application</CardDescription>
+          <div className="border border-gray-200 bg-white p-8">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100">
+                <FileText className="h-5 w-5 text-gray-700" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-medium text-gray-900">Required Documents</h3>
+                <p className="text-sm text-gray-600 font-light">Keep these documents ready for subsidy application</p>
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {[
+                'Aadhar Card',
+                'Electricity Bill',
+                'Property Ownership Proof',
+                'Bank Account Details',
+                'Passport Size Photo',
+                'Cancelled Cheque',
+                'Property Tax Receipt',
+                'NOC (if required)',
+              ].map((doc, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <CheckCircle2 className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                  <span className="text-sm text-gray-600 font-light">{doc}</span>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {[
-                  'Aadhar Card',
-                  'Electricity Bill',
-                  'Property Ownership Proof',
-                  'Bank Account Details',
-                  'Passport Size Photo',
-                  'Cancelled Cheque',
-                  'Property Tax Receipt',
-                  'NOC (if required)',
-                ].map((doc, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-700">{doc}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Benefits */}
-      <section className="py-16 bg-white">
+      {/* Benefits - Minimal Design */}
+      <section className="py-32 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">Subsidy Benefits</h2>
-            <p className="mt-4 text-lg text-gray-600">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl font-light text-gray-900 sm:text-5xl mb-6">
+              Subsidy{' '}
+              <span className="font-medium">Benefits</span>
+            </h2>
+            <p className="text-lg text-gray-600 font-light">
               Why you should apply for solar subsidy
             </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             {[
               { title: 'Reduced Cost', description: 'Up to 40% reduction in installation cost', icon: '💰' },
               { title: 'Quick ROI', description: 'Faster return on investment', icon: '📈' },
@@ -231,36 +252,35 @@ export default function SubsidyPage() {
             ].map((benefit, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                whileHover={{ y: -4, transition: { duration: 0.3 } }}
+                className="text-center"
               >
-                <Card className="h-full text-center hover-lift">
-                  <CardHeader>
-                    <div className="text-4xl mb-3">{benefit.icon}</div>
-                    <CardTitle className="text-lg">{benefit.title}</CardTitle>
-                    <CardDescription>{benefit.description}</CardDescription>
-                  </CardHeader>
-                </Card>
+                <div className="text-4xl mb-4">{benefit.icon}</div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{benefit.title}</h3>
+                <p className="text-sm text-gray-600 font-light">{benefit.description}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-16 bg-gradient-to-r from-green-600 to-green-800">
+      {/* CTA - Minimal Design */}
+      <section className="py-32 bg-gray-900">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-white sm:text-4xl mb-4">
-            Ready to Apply for Subsidy?
+          <h2 className="text-4xl font-light text-white sm:text-5xl mb-6">
+            Ready to Apply for{' '}
+            <span className="font-medium">Subsidy?</span>
           </h2>
-          <p className="text-lg text-green-100 mb-8">
+          <p className="text-lg text-gray-400 mb-10 font-light">
             We'll help you with the entire subsidy application process
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link href="/contact">
-              <Button size="xl" className="bg-white text-green-600 hover:bg-green-50">
+              <Button size="xl" className="bg-white text-gray-900 hover:bg-gray-100 font-medium border border-white">
                 Get Expert Assistance
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -270,7 +290,7 @@ export default function SubsidyPage() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Button size="xl" variant="outline" className="border-white text-white hover:bg-white/10">
+              <Button size="xl" variant="outline" className="border border-gray-700 bg-gray-800/50 text-white hover:bg-gray-800 hover:border-gray-600 font-medium">
                 Visit PM Surya Ghar Portal
                 <Download className="ml-2 h-5 w-5" />
               </Button>

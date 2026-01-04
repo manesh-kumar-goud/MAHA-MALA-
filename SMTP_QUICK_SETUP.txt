@@ -1,0 +1,42 @@
+===========================================
+GMAIL SMTP QUICK SETUP GUIDE
+===========================================
+
+STEP 1: Enable 2-Step Verification
+-----------------------------------
+1. Go to: https://myaccount.google.com/security
+2. Click "2-Step Verification" and enable it
+3. Verify your phone number
+
+STEP 2: Generate App Password
+------------------------------
+1. Go to: https://myaccount.google.com/apppasswords
+2. Select "Mail" and "Other (Custom name)"
+3. Enter name: "Mahalaxmi Solar Website"
+4. Click "Generate"
+5. COPY the 16-character password (remove spaces)
+
+STEP 3: Add to .env.local
+--------------------------
+Create or edit .env.local file in project root:
+
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASSWORD=your-16-char-app-password
+RECIPIENT_EMAIL=your-email@gmail.com
+
+STEP 4: Restart Server
+-----------------------
+Stop and restart: npm run dev
+
+STEP 5: Test
+------------
+Submit a subsidy inquiry or contact form and check your email!
+
+===========================================
+For detailed instructions, see: GMAIL_SMTP_SETUP.md
+===========================================
+
+
+

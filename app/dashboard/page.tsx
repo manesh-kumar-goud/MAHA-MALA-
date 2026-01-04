@@ -58,7 +58,12 @@ export default function DashboardPage() {
 
   const fetchDashboardData = async (userId: string) => {
     try {
-      const { data: leadsData, error: leadsError } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { data: leadsData, error: leadsError } = await db
         .from('leads')
         .select('*')
         .eq('referrer_id', userId)
@@ -70,10 +75,10 @@ export default function DashboardPage() {
       setLeads(leadsData || []);
 
       const totalLeads = leadsData?.length || 0;
-      const activeLeads = leadsData?.filter((l) =>
+      const activeLeads = leadsData?.filter((l: any) =>
         ['submitted', 'verified', 'contacted', 'interested'].includes(l.status)
       ).length || 0;
-      const installedLeads = leadsData?.filter((l) =>
+      const installedLeads = leadsData?.filter((l: any) =>
         ['installed', 'rewarded'].includes(l.status)
       ).length || 0;
       const conversionRate = totalLeads > 0 ? (installedLeads / totalLeads) * 100 : 0;

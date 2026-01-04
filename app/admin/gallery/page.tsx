@@ -57,7 +57,12 @@ export default function AdminGalleryPage() {
 
   const fetchGallery = async () => {
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { data, error } = await db
         .from('gallery')
         .select('*')
         .order('display_order')
@@ -82,6 +87,12 @@ export default function AdminGalleryPage() {
     setSubmitting(true);
 
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        setSubmitting(false);
+        return;
+      }
+      const db = supabase as any;
       const itemData = {
         title: formData.title.trim(),
         description: formData.description.trim() || null,
@@ -96,7 +107,7 @@ export default function AdminGalleryPage() {
       };
 
       if (editingId) {
-        const { error } = await supabase
+        const { error } = await db
           .from('gallery')
           .update(itemData)
           .eq('id', editingId);
@@ -104,7 +115,7 @@ export default function AdminGalleryPage() {
         if (error) throw error;
         toast.success('Gallery item updated successfully');
       } else {
-        const { error } = await supabase.from('gallery').insert([itemData]);
+        const { error } = await db.from('gallery').insert([itemData]);
 
         if (error) throw error;
         toast.success('Gallery item added successfully');
@@ -140,7 +151,12 @@ export default function AdminGalleryPage() {
     if (!confirm('Are you sure you want to delete this item?')) return;
 
     try {
-      const { error } = await supabase.from('gallery').delete().eq('id', id);
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { error } = await db.from('gallery').delete().eq('id', id);
 
       if (error) throw error;
 

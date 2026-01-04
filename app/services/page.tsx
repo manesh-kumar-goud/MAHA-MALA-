@@ -29,89 +29,105 @@ export default function ServicesPage() {
 
   const fetchServices = async () => {
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        setServices([]);
+        return;
+      }
+
+      if (!supabase) {
+        setServices([]);
+        return;
+      }
+      const db = supabase as any;
+      const { data, error } = await db
         .from('services')
         .select('*')
         .eq('is_active', true)
         .order('display_order');
 
-      if (error) throw error;
+      if (error) {
+        // Silently handle error - show empty state in UI
+        setServices([]);
+        return;
+      }
+      
       setServices(data || []);
     } catch (error) {
-      console.error('Error fetching services:', error);
+      // Silently handle error - show empty state in UI
+      setServices([]);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+    <div className="min-h-screen bg-white">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 py-20">
-        <div className="absolute inset-0 bg-grid-pattern opacity-10" />
+      {/* Minimal Hero Section */}
+      <section className="relative overflow-hidden bg-white py-32 border-b border-gray-100">
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
           >
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl mb-6">
-              Our Solar Solutions
+            <h1 className="text-5xl font-light tracking-tight text-gray-900 sm:text-6xl md:text-7xl mb-6">
+              Our{' '}
+              <span className="font-medium">
+                Solar Solutions
+              </span>
             </h1>
-            <p className="mx-auto max-w-3xl text-lg text-blue-100 sm:text-xl">
+            <p className="mx-auto max-w-3xl text-lg text-gray-600 sm:text-xl leading-relaxed font-light">
               Comprehensive solar power solutions tailored to your needs
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Services Section */}
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      {/* Minimal Services Section */}
+      <section className="py-32 bg-white relative overflow-hidden">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {loading ? (
             <div className="flex justify-center py-12">
               <LoadingSpinner size="lg" />
             </div>
           ) : (
-            <div className="grid gap-8 md:grid-cols-2">
+            <div className="grid gap-12 md:grid-cols-2">
               {services.map((service, index) => {
                 const Icon = iconMap[service.icon_name || 'home'] || Home;
                 return (
                   <motion.div
                     key={service.id}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 40 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ duration: 0.6, delay: index * 0.1, ease: [0.25, 0.4, 0.25, 1] }}
+                    whileHover={{ y: -4, transition: { duration: 0.3 } }}
+                    className="group"
                   >
-                    <Card className="h-full hover-lift border-2 hover:border-blue-300">
-                      <CardHeader>
-                        <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600">
-                          <Icon className="h-7 w-7 text-white" />
+                    <div className="h-full p-8 border border-gray-200 hover:border-gray-300 transition-all duration-300 bg-white">
+                      <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-lg bg-gray-100 group-hover:bg-gray-200 transition-colors">
+                        <Icon className="h-7 w-7 text-gray-700" />
+                      </div>
+                      <h3 className="text-2xl font-medium mb-4 text-gray-900">{service.title}</h3>
+                      <p className="text-base text-gray-600 leading-relaxed mb-6 font-light">
+                        {service.description}
+                      </p>
+                      {service.features && service.features.length > 0 && (
+                        <div className="space-y-3">
+                          <h4 className="font-medium text-gray-900 text-base mb-3">Key Features:</h4>
+                          <ul className="space-y-2">
+                            {service.features.map((feature, idx) => (
+                              <li key={idx} className="flex items-start space-x-3">
+                                <CheckCircle2 className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                                <span className="text-sm text-gray-600 font-light">{feature}</span>
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                        <CardTitle className="text-2xl">{service.title}</CardTitle>
-                        <CardDescription className="text-base mt-2">
-                          {service.description}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        {service.features && service.features.length > 0 && (
-                          <div className="space-y-3">
-                            <h4 className="font-semibold text-gray-900">Key Features:</h4>
-                            <ul className="space-y-2">
-                              {service.features.map((feature, idx) => (
-                                <li key={idx} className="flex items-start space-x-2">
-                                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                                  <span className="text-gray-600">{feature}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
+                      )}
+                    </div>
                   </motion.div>
                 );
               })}
@@ -120,16 +136,31 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* Process Section */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">Our Installation Process</h2>
-            <p className="mt-4 text-lg text-gray-600">
-              Simple, transparent, and hassle-free
-            </p>
+      {/* Minimal Process Section */}
+      <section className="py-32 bg-gray-50 relative overflow-hidden">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-20">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white text-gray-700 text-xs font-medium tracking-wide uppercase mb-8">
+                How It Works
+              </div>
+              <h2 className="text-4xl font-light text-gray-900 sm:text-5xl lg:text-6xl mb-6">
+                Our Installation{' '}
+                <span className="font-medium">
+                  Process
+                </span>
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light">
+                Simple, transparent, and hassle-free
+              </p>
+            </motion.div>
           </div>
-          <div className="grid gap-8 md:grid-cols-4">
+          <div className="grid gap-12 md:grid-cols-4">
             {[
               { step: '1', title: 'Consultation', description: 'Free site survey and requirement analysis' },
               { step: '2', title: 'Design', description: 'Custom system design and proposal' },
@@ -138,45 +169,56 @@ export default function ServicesPage() {
             ].map((item, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="text-center"
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: index * 0.1, ease: [0.25, 0.4, 0.25, 1] }}
+                whileHover={{ y: -4, transition: { duration: 0.3 } }}
+                className="text-center group"
               >
-                <div className="mb-4 mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-2xl font-bold text-white">
+                <div className="relative mb-6 mx-auto flex h-16 w-16 items-center justify-center rounded-lg bg-gray-900 text-2xl font-light text-white group-hover:bg-gray-800 transition-colors">
                   {item.step}
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.title}</h3>
-                <p className="text-gray-600">{item.description}</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-3">{item.title}</h3>
+                <p className="text-sm text-gray-600 leading-relaxed font-light">{item.description}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-blue-600 to-blue-800">
-        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-white sm:text-4xl mb-4">
-            Ready to Go Solar?
-          </h2>
-          <p className="text-lg text-blue-100 mb-8">
-            Get a free consultation and customized solar solution for your needs
-          </p>
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link href="/contact">
-              <Button size="xl" className="bg-white text-blue-600 hover:bg-blue-50">
-                Get Free Consultation
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-            <Link href="/auth/login">
-              <Button size="xl" variant="outline" className="border-white text-white hover:bg-white/10">
-                Join Referral Program
-              </Button>
-            </Link>
-          </div>
+      {/* Minimal CTA Section */}
+      <section className="py-32 bg-gray-900 relative overflow-hidden">
+        <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-4xl font-light text-white sm:text-5xl mb-6">
+              Ready to Go{' '}
+              <span className="font-medium">
+                Solar?
+              </span>
+            </h2>
+            <p className="text-lg text-gray-400 mb-10 max-w-2xl mx-auto font-light">
+              Get a free consultation and customized solar solution for your needs
+            </p>
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Link href="/contact">
+                <Button size="lg" className="bg-white text-gray-900 hover:bg-gray-100 font-medium shadow-sm hover:shadow-md transition-all duration-300 px-8 border border-white">
+                  Get Free Consultation
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <Link href="/auth/login">
+                <Button size="lg" variant="outline" className="border border-gray-700 bg-gray-800/50 backdrop-blur-sm text-white hover:bg-gray-800 hover:border-gray-600 font-medium transition-all duration-300 px-8">
+                  Join Referral Program
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -22,7 +23,12 @@ export default function FAQPage() {
 
   const fetchFAQs = async () => {
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        setFaqs([]);
+        return;
+      }
+      const db = supabase as any;
+      const { data, error } = await db
         .from('faqs')
         .select('*')
         .eq('is_active', true)

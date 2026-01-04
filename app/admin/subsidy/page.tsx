@@ -57,7 +57,12 @@ export default function AdminSubsidyPage() {
 
   const fetchSubsidies = async () => {
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { data, error } = await db
         .from('subsidy_info')
         .select('*')
         .order('display_order');
@@ -80,6 +85,12 @@ export default function AdminSubsidyPage() {
     setSubmitting(true);
 
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        setSubmitting(false);
+        return;
+      }
+      const db = supabase as any;
       const eligibility = formData.eligibility_criteria
         .split('\n')
         .map((c) => c.trim())
@@ -103,11 +114,11 @@ export default function AdminSubsidyPage() {
       };
 
       if (editingId) {
-        const { error } = await supabase.from('subsidy_info').update(subsidyData).eq('id', editingId);
+        const { error } = await db.from('subsidy_info').update(subsidyData).eq('id', editingId);
         if (error) throw error;
         toast.success('Subsidy info updated successfully');
       } else {
-        const { error } = await supabase.from('subsidy_info').insert([subsidyData]);
+        const { error } = await db.from('subsidy_info').insert([subsidyData]);
         if (error) throw error;
         toast.success('Subsidy info created successfully');
       }
@@ -142,7 +153,12 @@ export default function AdminSubsidyPage() {
     if (!confirm('Are you sure you want to delete this subsidy info?')) return;
 
     try {
-      const { error } = await supabase.from('subsidy_info').delete().eq('id', id);
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { error } = await db.from('subsidy_info').delete().eq('id', id);
       if (error) throw error;
       toast.success('Subsidy info deleted successfully');
       await fetchSubsidies();

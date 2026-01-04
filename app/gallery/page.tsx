@@ -22,7 +22,12 @@ export default function GalleryPage() {
 
   const fetchGallery = async () => {
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        setItems([]);
+        return;
+      }
+      const db = supabase as any;
+      const { data, error } = await db
         .from('gallery')
         .select('*')
         .order('display_order')

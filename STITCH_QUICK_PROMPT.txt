@@ -1,0 +1,110 @@
+Design a modern, minimal, professional solar energy company website for "Mahalaxmi Solar Energies" - a leading solar installation company in India focusing on government subsidies (PM Surya Ghar Yojana) and referral programs.
+
+COLOR PALETTE:
+- Primary: Teal (#0D9488, teal-600) for sustainability
+- Dark: Deep Teal (#134E4A, teal-900) for contrast
+- Background: White (#FFFFFF) and Light Gray (#F9FAFB)
+- Text: Dark Gray (#111827) and Medium Gray (#4B5563)
+
+TYPOGRAPHY:
+- Headings: Light weight (300-400), very large (4xl-7xl), elegant spacing
+- Body: Light weight (300-400), readable (base-lg), relaxed line-height
+- Font: Modern sans-serif (Inter/Poppins style)
+
+LANDING PAGE SECTIONS:
+
+1. HERO SECTION:
+- Full-width video background (solar panels/installations)
+- Dark overlay (60-70% opacity) for text readability
+- Centered content:
+  * Badge: "PM Surya Ghar - Muft Bijli Yojana 2025" (pill shape, white text)
+  * Headline: "Power Your Home with Clean Solar Energy" (huge, light font, white)
+  * Subheadline: About subsidies up to ₹78,000 and 90% bill reduction
+  * Two CTAs: "Get Started" (teal button), "Lead Dashboard" (outlined)
+  * Trust indicators: "2,400+ Installations", "25 Year Warranty", "92% Satisfaction"
+
+2. HOW IT WORKS:
+- Light teal background (#F0FDFA)
+- Header: "How It Works" (large, light font)
+- 5-step horizontal grid:
+  * Each: Numbered circle (teal), icon, title, description
+  * Steps: Consultation → Design → Installation → Grid Connection → Savings
+
+3. STATISTICS:
+- White background
+- 4 large numbers in grid:
+  * "2,400+" Installations
+  * "₹8.5 Cr+" Savings
+  * "92%" Satisfaction
+  * "850+" Referrers
+- Very large numbers (6xl-7xl), light weight, teal color
+
+4. BENEFITS:
+- White background
+- Header: "Our Benefits"
+- 4 horizontal scrolling cards:
+  * Government Subsidy, Reduce Bills, Eco-Friendly, 25 Year Warranty
+  * Each: Icon in teal circle, title, description
+  * White cards, teal borders, hover effects
+
+5. SUBSIDY SECTION:
+- White with subtle dot pattern
+- Header: "Solar Subsidy Under PM Surya Ghar"
+- 3 horizontal scrolling cards:
+  * 1 kW: ₹30,000 (Home icon)
+  * 2 kW: ₹60,000 (Building icon)
+  * 3 kW+: ₹78,000 (Factory icon)
+- Teal accents, clean design
+
+6. REFERRAL PROGRAM:
+- Deep teal background (#134E4A)
+- Header: "Join Our Referral Program" (white text)
+- 4 horizontal scrolling cards:
+  * Refer & Earn, Track Progress, Instant Rewards, Secure Platform
+  * Dark teal cards, white text, icons
+
+7. TESTIMONIALS:
+- White background
+- Header: "What Our Customers Say"
+- 3-column grid:
+  * 5-star rating, quote, customer name, role, location
+  * Clean cards with subtle borders
+
+8. FAQ:
+- Light teal background
+- Header: "Frequently Asked Questions"
+- 4-5 items: Question icon (teal), question (bold), answer (light)
+
+9. CONTACT:
+- White background
+- Header: "Get In Touch"
+- 3-column: Phone, Email, Location (each with teal icon circle)
+
+10. FINAL CTA:
+- Deep teal background
+- "Ready to Switch to Solar Energy?"
+- Two buttons: "Contact Us Today" (white), "Join Referral Program" (outlined)
+
+NAVIGATION:
+- Fixed top, white with backdrop blur
+- Logo left, menu center, CTAs right
+- Mobile: Hamburger menu
+
+FOOTER:
+- Dark teal/gray background
+- Company info, links, contact, social icons
+
+DESIGN PRINCIPLES:
+- Minimal & clean (lots of white space)
+- Modern & professional
+- Light typography throughout
+- Subtle animations (fade in, slide up)
+- Smooth hover effects
+- Responsive (mobile-first)
+- PM Surya Ghar inspired aesthetics
+- Consistent teal color scheme
+
+Create a world-class, trustworthy solar energy website that builds trust, showcases benefits clearly, makes referral program attractive, and works beautifully on all devices.
+
+
+

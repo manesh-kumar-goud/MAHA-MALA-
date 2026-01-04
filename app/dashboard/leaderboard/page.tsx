@@ -13,6 +13,7 @@ import { formatCurrency, getInitials } from '@/lib/utils';
 import type { LeaderboardEntry } from '@/lib/types';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 export default function LeaderboardPage() {
   const router = useRouter();
@@ -38,7 +39,12 @@ export default function LeaderboardPage() {
 
   const fetchLeaderboard = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { data, error } = await db
         .from('users')
         .select('id, name, total_leads, total_rewards')
         .eq('role', 'user')
@@ -48,7 +54,7 @@ export default function LeaderboardPage() {
 
       if (error) throw error;
 
-      const leaderboardWithRanks: LeaderboardEntry[] = (data || []).map((user, index) => ({
+      const leaderboardWithRanks: LeaderboardEntry[] = (data || []).map((user: any, index: number) => ({
         user_id: user.id,
         name: user.name,
         total_leads: user.total_leads,

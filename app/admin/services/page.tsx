@@ -55,7 +55,12 @@ export default function AdminServicesPage() {
 
   const fetchServices = async () => {
     try {
-      const { data, error } = await supabase
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { data, error } = await db
         .from('services')
         .select('*')
         .order('display_order');
@@ -78,6 +83,12 @@ export default function AdminServicesPage() {
     setSubmitting(true);
 
     try {
+      if (!supabase) {
+        toast.error('Database connection not available');
+        setSubmitting(false);
+        return;
+      }
+      const db = supabase as any;
       const features = formData.features
         .split('\n')
         .map((f) => f.trim())
@@ -95,7 +106,7 @@ export default function AdminServicesPage() {
       };
 
       if (editingId) {
-        const { error } = await supabase
+        const { error } = await db
           .from('services')
           .update(serviceData)
           .eq('id', editingId);
@@ -103,7 +114,7 @@ export default function AdminServicesPage() {
         if (error) throw error;
         toast.success('Service updated successfully');
       } else {
-        const { error } = await supabase.from('services').insert([serviceData]);
+        const { error } = await db.from('services').insert([serviceData]);
 
         if (error) throw error;
         toast.success('Service created successfully');
@@ -138,7 +149,12 @@ export default function AdminServicesPage() {
     if (!confirm('Are you sure you want to delete this service?')) return;
 
     try {
-      const { error } = await supabase.from('services').delete().eq('id', id);
+      if (!supabase) {
+        toast.error('Database connection not available');
+        return;
+      }
+      const db = supabase as any;
+      const { error } = await db.from('services').delete().eq('id', id);
 
       if (error) throw error;
 
@@ -273,17 +289,18 @@ export default function AdminServicesPage() {
 
             <div className="space-y-2">
               <Label htmlFor="icon_name">Icon Name</Label>
-              <Select
+              <select
                 id="icon_name"
                 value={formData.icon_name}
                 onChange={(e) => setFormData({ ...formData, icon_name: e.target.value })}
                 disabled={submitting}
+                className="w-full rounded-md border border-gray-300 px-3 py-2"
               >
                 <option value="home">Home</option>
                 <option value="building">Building</option>
                 <option value="droplet">Droplet</option>
                 <option value="wrench">Wrench</option>
-              </Select>
+              </select>
             </div>
 
             <div className="space-y-2">
